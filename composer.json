@@ -1,0 +1,41 @@
+{
+    "name": "oxygen/pages",
+    "description": "",
+    "license": "MIT",
+    "keywords": [
+        "cms",
+        "framework",
+        "OxygenExtension"
+    ],
+    "authors": [
+        {
+            "name": "Chris Chamberlain",
+            "email": "c.chamberlain@iinet.net.au"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "oxygen/core": "dev-master",
+        "oxygen/crud": "dev-master",
+        "illuminate/support": "4.2.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Oxygen\\Pages\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "title": "Oxygen Pages",
+        "readme": "oxygen.md",
+        "changes": "changes.md",
+        "icon": "icon.png",
+        "providers": [
+            {
+                "name": "Pages",
+                "class": "Oxygen\\Pages\\PagesServiceProvider",
+                "description": "Adds Pages & Partials to the CMS"
+            }
+        ]
+    }
+}
