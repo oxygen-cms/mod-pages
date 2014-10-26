@@ -32,7 +32,7 @@
         "icon": "icon.png",
         "providers": [
             {
-                "name": "Pa ges",
+                "name": "Pages",
                 "class": "Oxygen\\Pages\\PagesServiceProvider",
                 "description": "Adds Pages & Partials to the CMS"
             }
