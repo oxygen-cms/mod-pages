@@ -1,6 +1,6 @@
 {
     "name": "oxygen/pages",
-    "description": "",
+    "description": "Pages Component for Oxygen",
     "license": "MIT",
     "keywords": [
         "cms",
@@ -32,7 +32,7 @@
         "icon": "icon.png",
         "providers": [
             {
-                "name": "Pages",
+                "name": "Pa ges",
                 "class": "Oxygen\\Pages\\PagesServiceProvider",
                 "description": "Adds Pages & Partials to the CMS"
             }
