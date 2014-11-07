@@ -1,0 +1,91 @@
+@extends(Config::get('oxygen/core::layout'))
+
+<?php
+    //$usePage = false;
+?>
+
+@section('content')
+
+@include('oxygen/crud::versionable.itemHeader', ['blueprint' => $blueprint, 'item' => $item, 'title' => 'View ' . $blueprint->getDisplayName(), 'seamless' => false])
+
+<div class="Block Block--noPadding">
+
+<div id="content" class="Content-container">
+
+    <button type="button" class="Content-collapseToggle Button Button-color--white">
+        <span class="Toggle--ifDisabled">
+            <span class="Icon Icon-expand Icon--pushRight"></span>
+            Expand
+        </span>
+        <span class="Toggle--ifEnabled Toggle--isHidden">
+            <span class="Icon Icon-times Icon--pushRight"></span>
+            Exit
+        </span>
+    </button>
+
+    <iframe src="{{ URL::route($blueprint->getRouteName('getContent'), $item->getId()) }}" class="Content-preview"></iframe>
+
+</div>
+
+</div>
+
+@include('oxygen/crud::versionable.versions', ['item' => $item])
+
+<?php Event::listen('oxygen.layout.body.after', function() { ?>
+
+    <script>
+        $(document).ready(function() {
+            var body = $(document.body);
+            var content = $("#content");
+
+            var toggle = new Oxygen.Toggle(
+                $(".Content-collapseToggle"),
+                function() {
+                    body.addClass("Body--noScroll");
+                    body.scrollTop(0);
+
+                    content.addClass("Content-container--noTransition");
+
+                    setTimeout(function() {
+                        content.css({
+                            position: "absolute",
+                            top: content.offset().top,
+                            left: content.offset().left,
+                            width: content.width(),
+                            height: content.height()
+                        });
+
+                        setTimeout(function() {
+                            content.removeClass("Content-container--noTransition");
+                            content.addClass("Content-container--fill");
+                        }, 0);
+                    }, 0)
+                },
+                function() {
+                    body.removeClass("Body--noScroll");
+
+                    content.removeClass("Content-container--fill");
+
+                    setTimeout(function() {
+                        content.addClass("Content-container--noTransition");
+
+                        setTimeout(function() {
+                            content.css({
+                                position: "",
+                                top: "",
+                                left: "",
+                                width: "",
+                                height: ""
+                            });
+
+                            content.removeClass("Content-container--noTransition");
+                        }, 0);
+                    }, 500);
+                }
+            );
+        });
+    </script>
+
+<?php }); ?>
+
+@stop

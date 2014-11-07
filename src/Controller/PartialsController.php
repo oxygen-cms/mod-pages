@@ -3,18 +3,23 @@
 namespace Oxygen\Pages\Controller;
 
 use Oxygen\Core\Blueprint\Manager as BlueprintManager;
+use Oxygen\Crud\Controller\Publishable;
 use Oxygen\Crud\Controller\VersionableCrudController;
+use Oxygen\Pages\Repository\PartialRepositoryInterface;
 
 class PartialsController extends VersionableCrudController {
 
+    use Publishable;
+
     /**
-     * Constructs the AuthController.
+     * Constructs the PagesController.
      *
-     * @param BlueprintManager $manager
+     * @param PartialRepositoryInterface $repository
+     * @param BlueprintManager        $manager
      */
 
-    public function __construct(BlueprintManager $manager) {
-        parent::__construct($manager, 'Partial', 'Oxygen\Pages\Model\Partial');
+    public function __construct(PartialRepositoryInterface $repository, BlueprintManager $manager) {
+        parent::__construct($repository, $manager, 'Partial');
     }
 
 }

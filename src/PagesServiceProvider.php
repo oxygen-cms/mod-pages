@@ -2,7 +2,7 @@
 
 namespace Oxygen\Pages;
 
-use Illuminate\Support\ServiceProvider;
+use Oxygen\Core\Support\ServiceProvider;
 
 class PagesServiceProvider extends ServiceProvider {
 
@@ -22,6 +22,7 @@ class PagesServiceProvider extends ServiceProvider {
 
 	public function boot() {
 		$this->package('oxygen/pages', 'oxygen/pages', __DIR__ . '/../resources');
+        $this->entities(__DIR__ . '/Entity');
 
 		// Blueprints
         $this->app['oxygen.blueprintManager']->loadDirectory(__DIR__ . '/../resources/blueprints');
@@ -42,7 +43,8 @@ class PagesServiceProvider extends ServiceProvider {
 	 */
 
 	public function register() {
-		//
+		$this->app->bind('Oxygen\Pages\Repository\PageRepositoryInterface', 'Oxygen\Pages\Repository\DoctrinePageRepository');
+        $this->app->bind('Oxygen\Pages\Repository\PartialRepositoryInterface', 'Oxygen\Pages\Repository\DoctrinePartialRepository');
 	}
 
 	/**

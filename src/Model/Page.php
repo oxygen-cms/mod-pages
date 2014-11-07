@@ -27,14 +27,4 @@ class Page extends Resource {
         return $this->stage == self::STAGE_PUBLISHED;
     }
 
-    /**
-     * Compiles the page's content.
-     *
-     * @return string
-     */
-
-    public function compileContent() {
-
-    }
-
 }

@@ -4,7 +4,8 @@ use Oxygen\Core\Action\Action;
 use Oxygen\Core\Action\Group;
 use Oxygen\Core\Action\Factory\ActionFactory;
 use Oxygen\Core\Html\Toolbar\ActionToolbarItem;
-use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
+    use Oxygen\Crud\BlueprintTrait\PublishableCrudTrait;
+    use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
 use Oxygen\Pages\Model\Page;
 
 Blueprint::make('Page', function($blueprint) {
@@ -17,9 +18,10 @@ Blueprint::make('Page', function($blueprint) {
         ],
         'item' => [
             'getView',
+            'getPreview',
             'getUpdate',
             'More' => ['postPublish', 'getInfo', 'deleteDelete', 'postRestore', 'deleteForce'],
-            'Version' => ['postNewVersion', 'postMakeHeadVersion']
+            'Version' => ['postMakeDraft', 'postNewVersion', 'postMakeHeadVersion']
         ],
         'versionList' => [
             'deleteVersions'
@@ -27,6 +29,7 @@ Blueprint::make('Page', function($blueprint) {
     ]);
 
     $blueprint->useTrait(new VersionableCrudTrait());
+    $blueprint->useTrait(new PublishableCrudTrait());
 
     $blueprint->makeAction(
         [
@@ -36,7 +39,7 @@ Blueprint::make('Page', function($blueprint) {
             'registerAtEnd' => true,
             'routeParametersCallback' => function(Action $action, array $options) {
                 return [
-                    $options['model']->slug
+                    $options['model']->getSlug()
                 ];
             },
             'customRouteCallback' => function(Action $action, $route) {
@@ -52,26 +55,25 @@ Blueprint::make('Page', function($blueprint) {
         'shouldRenderCallback' => function(ActionToolbarItem $item, array $arguments) {
             return
                 $item->shouldRenderBasic($arguments) &&
-                !$arguments['model']->trashed() &&
-                $arguments['model']->published();
+                !$arguments['model']->isDeleted() &&
+                $arguments['model']->isPublished();
         }
     ]);
 
     $blueprint->makeAction([
-        'name'      => 'postPublish',
-        'pattern'   => '{id}/publish',
-        'method'    => 'POST'
+        'name'      => 'getPreview',
+        'pattern'   => '{id}/preview'
     ]);
     $blueprint->makeToolbarItem([
-        'action'        => 'postPublish',
-        'label'         => 'Publish',
-        'icon'          => 'globe',
-    ])->addDynamicCallback(function(ActionToolbarItem $item, array $arguments) {
-        if($arguments['model']->published()) {
-            $item->label = 'Unpublish';
-            $item->icon = 'archive';
-        }
-    });
+        'action'        => 'getPreview',
+        'label'         => 'Preview',
+        'icon'          => 'eye'
+    ]);
+
+    $blueprint->makeAction([
+        'name'      => 'getContent',
+        'pattern'   => '{id}/content'
+    ]);
 
     $blueprint->makeFields([
         [
@@ -79,27 +81,17 @@ Blueprint::make('Page', function($blueprint) {
             'label'             => 'ID'
         ],
         [
-            'name'              => 'version_head'
-        ],
-        [
             'name'              => 'slug',
             'editable'          => true,
-            'validationRules'   => [
-                'required',
-                'slug',
-                'max:50',
-                'unique_ignore_versions'
-            ]
+            'description'       => Lang::get('oxygen/pages::descriptions.page.slug')
         ],
         [
             'name'              => 'title',
-            'editable'          => true,
-            'validationRules'   => [ 'required', 'max:50' ]
+            'editable'          => true
         ],
         [
             'name'              => 'author',
-            'editable'          => true,
-            'validationRules'   => [ 'max:50', 'name' ]
+            'editable'          => true
         ],
         [
             'name'              => 'description',
@@ -134,7 +126,6 @@ Blueprint::make('Page', function($blueprint) {
             'name'              => 'options',
             'type'              => 'editor-mini',
             'editable'          => true,
-            'validationRules'   => [ 'json' ],
             'options'           => [
                 'language'      => 'json',
                 'mode'          => 'code'
@@ -149,20 +140,32 @@ Blueprint::make('Page', function($blueprint) {
                 Page::STAGE_PENDING_REVIEW => 'Pending Review',
                 Page::STAGE_PUBLISHED => 'Published',
                 Page::STAGE_ARCHIVED => 'Archived'
-            ],
-            'validationRules' => [
-                'in:0,1,2,3'
             ]
         ],
         [
-            'name'      => 'created_at'
+            'name'      => 'createdAt'
         ],
         [
-            'name'      => 'updated_at'
+            'name'      => 'updatedAt'
         ],
         [
-            'name'      => 'deleted_at'
+            'name'      => 'deletedAt'
         ],
+        [
+            'name'      => 'headVersion',
+            'label'     => 'Head Version',
+            'type'      => 'relationship',
+            'editable'  => false,
+            /*'options'   => [
+                'type'       => 'manyToOne',
+                'blueprint'  => 'Page',
+                'allowNull' => true,
+                'items' => function() {
+                    $repo = App::make('Oxygen\Pages\Repository\PageRepositoryInterface');
+                    return $repo->columns(['id', 'title']);
+                }
+            ]*/
+        ]
     ]);
 
     $blueprint->setTitleField('title');

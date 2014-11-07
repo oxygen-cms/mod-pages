@@ -11,6 +11,6 @@ return [
     |
     */
 
-    'theme' => 'oxygen/pages::view'
+    'theme' => 'oxygen/pages::pages.view'
 
 ];

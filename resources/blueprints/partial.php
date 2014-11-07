@@ -4,11 +4,13 @@ use Oxygen\Core\Action\Factory\ActionFactory;
 use Oxygen\Core\Action\Action;
 use Oxygen\Core\Action\Group;
 use Oxygen\Core\Html\Toolbar\ActionToolbarItem;
-use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
+    use Oxygen\Crud\BlueprintTrait\PublishableCrudTrait;
+    use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
+    use Oxygen\Pages\Entity\Partial;
 
-Blueprint::make('Partial', function($blueprint) {
+    Blueprint::make('Partial', function($blueprint) {
     $blueprint->setController('Oxygen\Pages\Controller\PartialsController');
-    $blueprint->setIcon('chain');
+    $blueprint->setIcon('puzzle-piece');
 
     $blueprint->setToolbarOrders([
         'section' => [
@@ -16,8 +18,8 @@ Blueprint::make('Partial', function($blueprint) {
         ],
         'item' => [
             'getUpdate',
-            'More' => ['getInfo', 'deleteDelete', 'postRestore', 'deleteForce'],
-            'Version' => ['postNewVersion', 'postMakeHeadVersion']
+            'More' => ['getInfo', 'postPublish', 'deleteDelete', 'postRestore', 'deleteForce'],
+            'Version' => ['postMakeDraft', 'postNewVersion', 'postMakeHeadVersion']
         ],
         'versionList' => [
             'deleteVersions'
@@ -25,6 +27,7 @@ Blueprint::make('Partial', function($blueprint) {
     ]);
 
     $blueprint->useTrait(new VersionableCrudTrait());
+    $blueprint->useTrait(new PublishableCrudTrait());
 
     $blueprint->makeFields([
         [
@@ -33,23 +36,15 @@ Blueprint::make('Partial', function($blueprint) {
         ],
         [
             'name'              => 'key',
-            'editable'          => true,
-            'validationRules'   => [
-                'required',
-                'alpha_dot',
-                'max:50',
-                'unique_ignore_versions'
-            ]
+            'editable'          => true
         ],
         [
             'name'              => 'title',
-            'editable'          => true,
-            'validationRules'   => [ 'required', 'max:50' ]
+            'editable'          => true
         ],
         [
             'name'              => 'author',
-            'editable'          => true,
-            'validationRules'   => [ 'max:50', 'name' ]
+            'editable'          => true
         ],
         [
             'name'              => 'content',
@@ -60,13 +55,22 @@ Blueprint::make('Partial', function($blueprint) {
             ]
         ],
         [
-            'name'      => 'created_at'
+            'name'      => 'stage',
+            'type'      => 'select',
+            'editable'  => true,
+            'options'   => [
+                Partial::STAGE_DRAFT => 'Draft',
+                Partial::STAGE_PUBLISHED => 'Published',
+            ]
         ],
         [
-            'name'      => 'updated_at'
+            'name'      => 'createdAt'
         ],
         [
-            'name'      => 'deleted_at'
+            'name'      => 'updatedAt'
+        ],
+        [
+            'name'      => 'deletedAt'
         ],
     ]);
 
