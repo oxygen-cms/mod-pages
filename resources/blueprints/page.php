@@ -4,9 +4,9 @@ use Oxygen\Core\Action\Action;
 use Oxygen\Core\Action\Group;
 use Oxygen\Core\Action\Factory\ActionFactory;
 use Oxygen\Core\Html\Toolbar\ActionToolbarItem;
-    use Oxygen\Crud\BlueprintTrait\PublishableCrudTrait;
-    use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
-use Oxygen\Pages\Model\Page;
+use Oxygen\Crud\BlueprintTrait\PublishableCrudTrait;
+use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
+use Oxygen\Pages\Entity\Page;
 
 Blueprint::make('Page', function($blueprint) {
     $blueprint->setController('Oxygen\Pages\Controller\PagesController');

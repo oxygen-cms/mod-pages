@@ -32,7 +32,7 @@ class PagesServiceProvider extends ServiceProvider {
 		$this->app['blade.compiler']->extend(function($view, $compiler) {
 			$pattern = $compiler->createMatcher('partial');
 
-			return preg_replace($pattern, '$1<?php echo $__env->model(Oxygen\Pages\Model\Partial::get($2), \'content\')->render(); ?>', $view);
+			return preg_replace($pattern, '$1<?php echo $__env->model($app[\'Oxygen\Pages\Repository\PartialRepositoryInterface\']->findByKey($2), \'content\')->render(); ?>', $view);
 		});
 	}
 

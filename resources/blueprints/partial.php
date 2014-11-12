@@ -1,14 +1,10 @@
 <?php
 
-use Oxygen\Core\Action\Factory\ActionFactory;
-use Oxygen\Core\Action\Action;
-use Oxygen\Core\Action\Group;
-use Oxygen\Core\Html\Toolbar\ActionToolbarItem;
-    use Oxygen\Crud\BlueprintTrait\PublishableCrudTrait;
-    use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
-    use Oxygen\Pages\Entity\Partial;
+use Oxygen\Crud\BlueprintTrait\PublishableCrudTrait;
+use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
+use Oxygen\Pages\Entity\Partial;
 
-    Blueprint::make('Partial', function($blueprint) {
+Blueprint::make('Partial', function($blueprint) {
     $blueprint->setController('Oxygen\Pages\Controller\PartialsController');
     $blueprint->setIcon('puzzle-piece');
 
