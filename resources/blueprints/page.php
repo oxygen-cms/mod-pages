@@ -19,8 +19,7 @@ Blueprint::make('Page', function($blueprint) {
         'item' => [
             'getView',
             'getPreview',
-            'getUpdate',
-            'More' => ['postPublish', 'getInfo', 'deleteDelete', 'postRestore', 'deleteForce'],
+            'getUpdate' => ['postPublish', 'getInfo', 'deleteDelete', 'postRestore', 'deleteForce'],
             'Version' => ['postMakeDraft', 'postNewVersion', 'postMakeHeadVersion']
         ],
         'versionList' => [
@@ -36,7 +35,7 @@ Blueprint::make('Page', function($blueprint) {
             'name'          => 'getView',
             'pattern'       => '{slug?}',
             'group'         => new Group('pages'),
-            'registerAtEnd' => true,
+            'register'      => 'atEnd',
             'routeParametersCallback' => function(Action $action, array $options) {
                 return [
                     $options['model']->getSlug()
@@ -156,7 +155,7 @@ Blueprint::make('Page', function($blueprint) {
             'label'     => 'Head Version',
             'type'      => 'relationship',
             'editable'  => false,
-            /*'options'   => [
+            'options'   => [
                 'type'       => 'manyToOne',
                 'blueprint'  => 'Page',
                 'allowNull' => true,
@@ -164,7 +163,7 @@ Blueprint::make('Page', function($blueprint) {
                     $repo = App::make('Oxygen\Pages\Repository\PageRepositoryInterface');
                     return $repo->columns(['id', 'title']);
                 }
-            ]*/
+            ]
         ]
     ]);
 
