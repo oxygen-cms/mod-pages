@@ -12,16 +12,23 @@
 
 <div id="content" class="Content-container">
 
-    <button type="button" class="Content-collapseToggle Button Button-color--white">
-        <span class="Toggle--ifDisabled">
-            <span class="Icon Icon-expand Icon--pushRight"></span>
-            Expand
-        </span>
-        <span class="Toggle--ifEnabled Toggle--isHidden">
-            <span class="Icon Icon-times Icon--pushRight"></span>
-            Exit
-        </span>
-    </button>
+    <div class="Content-toolbar">
+        <button type="button" class="Content-refresh Button Button-color--white">
+            <span class="Icon Icon-refresh Icon--pushRight"></span>
+            Refresh
+        </button>
+
+        <button type="button" class="Content-collapseToggle Button Button-color--white">
+            <span class="Toggle--ifDisabled">
+                <span class="Icon Icon-expand Icon--pushRight"></span>
+                Expand
+            </span>
+            <span class="Toggle--ifEnabled Toggle--isHidden">
+                <span class="Icon Icon-times Icon--pushRight"></span>
+                Exit
+            </span>
+        </button>
+    </div>
 
     <iframe src="{{ URL::route($blueprint->getRouteName('getContent'), $item->getId()) }}" class="Content-preview"></iframe>
 
@@ -37,6 +44,10 @@
         $(document).ready(function() {
             var body = $(document.body);
             var content = $("#content");
+
+            $(".Content-refresh").on("click", function() {
+                $(".Content-preview")[0].contentWindow.location.reload();
+            });
 
             var toggle = new Oxygen.Toggle(
                 $(".Content-collapseToggle"),
