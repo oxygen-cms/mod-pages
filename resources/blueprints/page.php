@@ -19,7 +19,7 @@ Blueprint::make('Page', function($blueprint) {
         'item' => [
             'getView',
             'getPreview',
-            'getUpdate' => ['postPublish', 'getInfo', 'deleteDelete', 'postRestore', 'deleteForce'],
+            'getUpdate,More' => ['postPublish', 'getInfo', 'deleteDelete', 'postRestore', 'deleteForce'],
             'Version' => ['postMakeDraft', 'postNewVersion', 'postMakeHeadVersion']
         ],
         'versionList' => [

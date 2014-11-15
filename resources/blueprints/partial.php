@@ -13,7 +13,7 @@ Blueprint::make('Partial', function($blueprint) {
             'getCreate', 'getTrash'
         ],
         'item' => [
-            'getUpdate' => ['getInfo', 'postPublish', 'deleteDelete', 'postRestore', 'deleteForce'],
+            'getUpdate,More' => ['getInfo', 'postPublish', 'deleteDelete', 'postRestore', 'deleteForce'],
             'Version' => ['postMakeDraft', 'postNewVersion', 'postMakeHeadVersion']
         ],
         'versionList' => [
