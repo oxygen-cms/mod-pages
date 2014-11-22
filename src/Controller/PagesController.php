@@ -56,7 +56,8 @@ class PagesController extends VersionableCrudController {
         $item = $this->getItem($item);
 
         return View::make('oxygen/pages::pages.preview', [
-            'item' => $item
+            'item' => $item,
+            'title' => Lang::get('oxygen/pages::ui.preview')
         ]);
     }
 
