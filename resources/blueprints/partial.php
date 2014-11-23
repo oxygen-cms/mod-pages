@@ -22,7 +22,6 @@ Blueprint::make('Partial', function($blueprint) {
     ]);
 
     $blueprint->useTrait(new VersionableCrudTrait());
-    $blueprint->useTrait(new PublishableCrudTrait());
 
     $blueprint->makeFields([
         [
@@ -50,15 +49,6 @@ Blueprint::make('Partial', function($blueprint) {
             ]
         ],
         [
-            'name'      => 'stage',
-            'type'      => 'select',
-            'editable'  => true,
-            'options'   => [
-                Partial::STAGE_DRAFT => 'Draft',
-                Partial::STAGE_PUBLISHED => 'Published',
-            ]
-        ],
-        [
             'name'      => 'createdAt'
         ],
         [
@@ -68,6 +58,14 @@ Blueprint::make('Partial', function($blueprint) {
             'name'      => 'deletedAt'
         ],
     ]);
+
+    $blueprint->useTrait(new PublishableCrudTrait());
+
+    $stage = $blueprint->getField('stage');
+    $stage->options = [
+        Partial::STAGE_DRAFT => 'Draft',
+        Partial::STAGE_PUBLISHED => 'Published',
+    ];
 
     $blueprint->setTitleField('title');
 });

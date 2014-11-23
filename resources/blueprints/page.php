@@ -28,7 +28,6 @@ Blueprint::make('Page', function($blueprint) {
     ]);
 
     $blueprint->useTrait(new VersionableCrudTrait());
-    $blueprint->useTrait(new PublishableCrudTrait());
 
     $blueprint->makeAction(
         [
@@ -132,17 +131,6 @@ Blueprint::make('Page', function($blueprint) {
             ]
         ],
         [
-            'name'      => 'stage',
-            'type'      => 'select',
-            'editable'  => true,
-            'options'   => [
-                Page::STAGE_DRAFT => 'Draft',
-                Page::STAGE_PENDING_REVIEW => 'Pending Review',
-                Page::STAGE_PUBLISHED => 'Published',
-                Page::STAGE_ARCHIVED => 'Archived'
-            ]
-        ],
-        [
             'name'      => 'createdAt'
         ],
         [
@@ -167,6 +155,16 @@ Blueprint::make('Page', function($blueprint) {
             ]
         ]
     ]);
+
+    $blueprint->useTrait(new PublishableCrudTrait());
+
+    $stage = $blueprint->getField('stage');
+    $stage->options = [
+        Page::STAGE_DRAFT => 'Draft',
+        Page::STAGE_PENDING_REVIEW => 'Pending Review',
+        Page::STAGE_PUBLISHED => 'Published',
+        Page::STAGE_ARCHIVED => 'Archived'
+    ];
 
     $blueprint->setTitleField('title');
 });
