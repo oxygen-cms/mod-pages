@@ -11,6 +11,20 @@ return [
     |
     */
 
-    'theme' => 'oxygen/pages::pages.view'
+    'theme' => 'oxygen/pages::pages.view',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache
+    |--------------------------------------------------------------------------
+    |
+    | Config information for caching pages.
+    |
+    */
+
+    'cache' => [
+        'enabled' => false,
+        'location' => '/public/content/cache'
+    ]
 
 ];

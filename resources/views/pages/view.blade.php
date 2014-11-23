@@ -29,7 +29,6 @@
 
             .Content {
                 padding: 2em;
-                min-height: 100vh;
             }
 
             .Footer {
@@ -46,8 +45,8 @@
         <div class="Content">
             {{ $content }}
         </div>
-        <header class="Footer">
+        <footer class="Footer">
             <p>Created by Oxygen</p>
-        </header>
+        </footer>
     </body>
 </html>

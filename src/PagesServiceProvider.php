@@ -2,6 +2,9 @@
 
 namespace Oxygen\Pages;
 
+use Oxygen\Pages\Cache\FileCache;
+use Oxygen\Pages\Cache\PageChangedSubscriber;
+use Carbon\Carbon;
 use Oxygen\Core\Support\ServiceProvider;
 
 class PagesServiceProvider extends ServiceProvider {
@@ -34,6 +37,21 @@ class PagesServiceProvider extends ServiceProvider {
 
 			return preg_replace($pattern, '$1<?php echo $__env->model($app[\'Oxygen\Pages\Repository\PartialRepositoryInterface\']->findByKey($2), \'content\')->render(); ?>', $view);
 		});
+
+        // Page Caching
+        $this->app->bind('Oxygen\Pages\Cache\CacheInterface', 'Oxygen\Pages\Cache\FileCache');
+        $this->app->bindShared('Oxygen\Pages\Cache\FileCache', function($app) {
+            return new FileCache(base_path() . '/' . $app['config']->get('oxygen/pages::cache.location'), $app['files']);
+        });
+
+        if($this->app['config']->get('oxygen/pages::cache.enabled') === true) {
+            $this->app['router']->filter('oxygen.cache', 'Oxygen\Pages\Cache\CacheFilter');
+
+            $this->app->resolving('Doctrine\ORM\EntityManagerInterface', function($entities) {
+                $entities->getEventManager()
+                         ->addEventSubscriber($this->app->make('Oxygen\Pages\Cache\EntityChangedSubscriber'));
+            });
+        }
 	}
 
 	/**
