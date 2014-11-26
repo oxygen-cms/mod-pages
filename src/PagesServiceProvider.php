@@ -3,7 +3,6 @@
 namespace Oxygen\Pages;
 
 use Oxygen\Pages\Cache\FileCache;
-use Oxygen\Pages\Cache\PageChangedSubscriber;
 use Carbon\Carbon;
 use Oxygen\Core\Support\ServiceProvider;
 

@@ -3,6 +3,7 @@
 namespace Oxygen\Pages\Repository;
 
 use Exception;
+use \Doctrine\ORM\NoResultException as DoctrineNoResultException;
 use Oxygen\Data\Exception\NoResultException;
 use Oxygen\Data\Repository\Doctrine\Publishable;
 use Oxygen\Data\Repository\Doctrine\Repository;
@@ -34,15 +35,15 @@ class DoctrinePageRepository extends Repository implements PageRepositoryInterfa
 
     public function findBySlug($slug) {
         try {
-            return $this->createScopedQueryBuilder(['excludeTrashed'])
+            $qb = $this->createScopedQueryBuilder(['excludeTrashed'])
                 ->andWhere('o.stage = :stage')
                 ->andWhere('o.slug = :slug')
                 ->setParameter('stage', Page::STAGE_PUBLISHED)
-                ->setParameter('slug', $slug)
-                ->getQuery()
+                ->setParameter('slug', $slug);
+            return $qb->getQuery()
                 ->getSingleResult();
-        } catch(Exception $e) {
-            throw new NoResultException($e);
+        } catch(DoctrineNoResultException $e) {
+            throw new NoResultException($e, $this->replaceQueryParameters($qb->getDQL(), $qb->getParameters()));
         }
     }
 
