@@ -4,6 +4,20 @@
         <meta charset="UTF-8">
         <title>Website</title>
         <style>
+            .cf:before,
+            .cf:after {
+                content: " ";
+                display: table;
+            }
+
+            .cf:after {
+                clear: both;
+            }
+
+            .cf {
+                *zoom: 1;
+            }
+
             html {
                 font-family: sans-serif;
             }
@@ -18,13 +32,13 @@
 
             .Header {
                 padding: 2em;
-                background-color: #eee;
+                background-color: #fafafa;
                 border-bottom: 1px solid #ccc;
-                text-align: center;
             }
 
             .Header-title {
                 font-weight: 200;
+                float: left;
             }
 
             .Content {
@@ -39,7 +53,7 @@
         </style>
     </head>
     <body>
-        <header class="Header">
+        <header class="Header cf">
             <h1 class="Header-title">Oxygen Example Theme</h1>
         </header>
         <div class="Content">
