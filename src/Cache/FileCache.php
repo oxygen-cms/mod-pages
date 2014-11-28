@@ -26,6 +26,9 @@ class FileCache implements CacheInterface {
      * @return void
      */
     public function clear($slug) {
+        if($slug === '/' || $slug === '') {
+            $slug = 'index';
+        }
         $file = $this->location . '/' . $slug . '.html';
 
         if($this->files->exists($file)) {
@@ -54,6 +57,9 @@ class FileCache implements CacheInterface {
      */
 
     public function put($slug, $content) {
+        if($slug === '/' || $slug === '') {
+            $slug = 'index';
+        }
         $file = $this->location . '/' . $slug . '.html';
         $dir = dirname($file);
         if(!$this->files->exists($dir)) {
