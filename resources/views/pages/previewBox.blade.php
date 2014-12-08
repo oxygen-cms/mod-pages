@@ -22,7 +22,7 @@
 
 </div>
 
-<?php Event::listen('oxygen.layout.body.after', function() { ?>
+<?php Event::listen('oxygen.layout.page.after', function() { ?>
 
     <script>
         $(document).ready(function() {
