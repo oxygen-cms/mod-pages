@@ -25,7 +25,9 @@
 <?php Event::listen('oxygen.layout.page.after', function() { ?>
 
     <script>
-        $(document).ready(function() {
+        var Oxygen = Oxygen || {};
+        Oxygen.load = Oxygen.load || [];
+        Oxygen.load.push(function() {
             var body = $(document.body);
             var content = $("#content");
 
@@ -37,11 +39,12 @@
                 $(".Content-collapseToggle"),
                 function() {
                     body.addClass("Body--noScroll");
-                    body.scrollTop(0);
 
                     content.addClass("Content-container--noTransition");
 
                     setTimeout(function() {
+                        content.after('<div class="Content-shadow" style="width: ' + content.width() + '; height: ' + content.height() + '">')
+
                         content.css({
                             position: "absolute",
                             top: content.offset().top,
@@ -51,6 +54,7 @@
                         });
 
                         setTimeout(function() {
+                            body.scrollTop(0);
                             content.removeClass("Content-container--noTransition");
                             content.addClass("Content-container--fill");
                         }, 0);
@@ -64,15 +68,17 @@
                     setTimeout(function() {
                         content.addClass("Content-container--noTransition");
 
-                        setTimeout(function() {
-                            content.css({
-                                position: "",
-                                top: "",
-                                left: "",
-                                width: "",
-                                height: ""
-                            });
+                        content.css({
+                            position: "",
+                            top: "",
+                            left: "",
+                            width: "",
+                            height: ""
+                        });
 
+                        $(".Content-shadow").remove();
+
+                        setTimeout(function() {
                             content.removeClass("Content-container--noTransition");
                         }, 0);
                     }, 500);
