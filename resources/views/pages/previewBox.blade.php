@@ -84,6 +84,8 @@
                     }, 500);
                 }
             );
+
+            toggle.handleToggle();
         });
     </script>
 
