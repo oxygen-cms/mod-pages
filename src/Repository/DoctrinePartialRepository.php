@@ -2,7 +2,7 @@
 
 namespace Oxygen\Pages\Repository;
 
-use Exception;
+use Doctrine\ORM\NoResultException as DoctrineNoResultException;
 use Oxygen\Data\Exception\NoResultException;
 use Oxygen\Data\Repository\Doctrine\Publishable;
 use Oxygen\Data\Repository\Doctrine\Repository;
@@ -42,7 +42,7 @@ class DoctrinePartialRepository extends Repository implements PartialRepositoryI
                 ->setParameter('key', $key);
             return $qb->getQuery()
                 ->getSingleResult();
-        } catch(Exception $e) {
+        } catch(DoctrineNoResultException $e) {
             throw new NoResultException($e, $this->replaceQueryParameters($qb->getDQL(), $qb->getParameters()));
         }
     }
