@@ -49,14 +49,17 @@ Blueprint::make('Partial', function($blueprint) {
             ]
         ],
         [
-            'name'      => 'createdAt'
+            'name'      => 'createdAt',
+            'type'      => 'date'
         ],
         [
-            'name'      => 'updatedAt'
+            'name'      => 'updatedAt',
+            'type'      => 'date'
         ],
         [
-            'name'      => 'deletedAt'
-        ],
+            'name'      => 'deletedAt',
+            'type'      => 'date'
+        ]
     ]);
 
     $blueprint->useTrait(new PublishableCrudTrait());
