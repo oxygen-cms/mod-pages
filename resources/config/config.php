@@ -1,5 +1,9 @@
 <?php
 
+use Oxygen\Pages\Cache\CacheInterface;
+use Oxygen\Pages\Entity\Page;
+use Oxygen\Pages\Entity\Partial;
+
 return [
 
     /*
@@ -11,7 +15,7 @@ return [
     |
     */
 
-    'theme' => 'oxygen/pages::pages.view',
+    'theme' => 'yourTheme',
 
     /*
     |--------------------------------------------------------------------------
@@ -23,8 +27,20 @@ return [
     */
 
     'cache' => [
-        'enabled' => false,
-        'location' => '/public/content/cache'
+        'enabled' => true,
+        'location' => '/public/content/cache',
+        'entities' => [
+            'Oxygen\Pages\Entity\Page' => function(Page $page, CacheInterface $cache) {
+                if($page->isPublished()) {
+                    $cache->clear($page->getSlug());
+                }
+            },
+            'Oxygen\Pages\Entity\Partial' => function(Partial $partial, CacheInterface $cache) {
+                if($partial->isPublished()) {
+                    $cache->clearAll();
+                }
+            }
+        ]
     ]
 
 ];
