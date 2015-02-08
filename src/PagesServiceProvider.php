@@ -46,7 +46,7 @@ class PagesServiceProvider extends ServiceProvider {
         if($this->app['config']->get('oxygen/pages::cache.enabled') === true) {
             $this->app['router']->filter('oxygen.cache', 'Oxygen\Pages\Cache\CacheFilter');
 
-            $this->app->resolving('Doctrine\ORM\EntityManagerInterface', function($entities) {
+            $this->app->resolving('Doctrine\ORM\EntityManager', function($entities) {
                 $entities->getEventManager()
                          ->addEventSubscriber($this->app->make('Oxygen\Pages\Cache\EntityChangedSubscriber'));
             });
