@@ -8,34 +8,34 @@ use Oxygen\Core\Support\ServiceProvider;
 
 class PagesServiceProvider extends ServiceProvider {
 
-	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
+    /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
 
-	protected $defer = false;
+    protected $defer = false;
 
-	/**
-	 * Bootstrap the application events.
-	 *
-	 * @return void
-	 */
+    /**
+     * Bootstrap the application events.
+     *
+     * @return void
+     */
 
-	public function boot() {
-		$this->package('oxygen/pages', 'oxygen/pages', __DIR__ . '/../resources');
+    public function boot() {
+        $this->package('oxygen/pages', 'oxygen/pages', __DIR__ . '/../resources');
         $this->entities(__DIR__ . '/Entity');
 
-		// Blueprints
+        // Blueprints
         $this->app['oxygen.blueprintManager']->loadDirectory(__DIR__ . '/../resources/blueprints');
         $this->app['oxygen.preferences']->loadDirectory(__DIR__ . '/../resources/preferences');
 
-		// Extends Blade compiler
-		$this->app['blade.compiler']->extend(function($view, $compiler) {
-			$pattern = $compiler->createMatcher('partial');
+        // Extends Blade compiler
+        $this->app['blade.compiler']->extend(function($view, $compiler) {
+            $pattern = $compiler->createMatcher('partial');
 
-			return preg_replace($pattern, '$1<?php echo $__env->model($app[\'Oxygen\Pages\Repository\PartialRepositoryInterface\']->findByKey($2), \'content\')->render(); ?>', $view);
-		});
+            return preg_replace($pattern, '$1<?php echo $__env->model($app[\'Oxygen\Pages\Repository\PartialRepositoryInterface\']->findByKey$2, \'content\')->render(); ?>', $view);
+        });
 
         // Page Caching
         $this->app->bind('Oxygen\Pages\Cache\CacheInterface', 'Oxygen\Pages\Cache\FileCache');
@@ -46,32 +46,39 @@ class PagesServiceProvider extends ServiceProvider {
         if($this->app['config']->get('oxygen/pages::cache.enabled') === true) {
             $this->app['router']->filter('oxygen.cache', 'Oxygen\Pages\Cache\CacheFilter');
 
-            $this->app->resolving('Doctrine\ORM\EntityManager', function($entities) {
+            $callback = function($entities) {
                 $entities->getEventManager()
                          ->addEventSubscriber($this->app->make('Oxygen\Pages\Cache\EntityChangedSubscriber'));
-            });
+            };
+
+            if($this->app->resolved('Doctrine\ORM\EntityManager')) {
+                $callback($this->app['Doctrine\ORM\EntityManager']);
+            } else {
+                $this->app->resolving('Doctrine\ORM\EntityManager', $callback);
+            }
+
         }
-	}
+    }
 
-	/**
-	 * Register the service provider.
-	 *
-	 * @return void
-	 */
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
 
-	public function register() {
-		$this->app->bind('Oxygen\Pages\Repository\PageRepositoryInterface', 'Oxygen\Pages\Repository\DoctrinePageRepository');
+    public function register() {
+        $this->app->bind('Oxygen\Pages\Repository\PageRepositoryInterface', 'Oxygen\Pages\Repository\DoctrinePageRepository');
         $this->app->bind('Oxygen\Pages\Repository\PartialRepositoryInterface', 'Oxygen\Pages\Repository\DoctrinePartialRepository');
-	}
+    }
 
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
 
-	public function provides() {
-		return [];
-	}
+    public function provides() {
+        return [];
+    }
 
 }
