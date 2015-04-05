@@ -109,15 +109,12 @@ class Page implements Validatable {
      */
 
     public function getValidationRules() {
-        $class = get_class($this);
-        $headVersion = $this->getHeadId();
-
         return [
             'slug' => [
                 'required',
                 'slug',
                 'max:255',
-                "unique:$class,slug,$headVersion,id,headVersion,!=,$headVersion"
+                $this->getUniqueValidationRule('slug')
             ],
             'title' => [
                 'required',

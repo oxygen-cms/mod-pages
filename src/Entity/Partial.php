@@ -82,15 +82,12 @@ class Partial implements Validatable {
      */
 
     public function getValidationRules() {
-        $class = get_class($this);
-        $headVersion = $this->getHeadId();
-
         return [
             'key' =>[
                 'required',
                 'alpha_dot',
                 'max:50',
-                "unique:$class,key,$headVersion,id,headVersion,!=,$headVersion"
+                $this->getUniqueValidationRule('slug')
             ],
             'title' => [
                 'required',
