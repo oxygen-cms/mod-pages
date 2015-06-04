@@ -10,7 +10,6 @@ interface CacheInterface {
      * @param string $slug
      * @return void
      */
-
     public function clear($slug);
 
     /**
@@ -18,7 +17,6 @@ interface CacheInterface {
      *
      * @return void
      */
-
     public function clearAll();
 
     /**
@@ -28,7 +26,6 @@ interface CacheInterface {
      * @param string $content
      * @return void
      */
-
     public function put($slug, $content);
 
 }

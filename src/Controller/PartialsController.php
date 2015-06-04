@@ -17,7 +17,6 @@ class PartialsController extends VersionableCrudController {
      * @param PartialRepositoryInterface $repository
      * @param BlueprintManager        $manager
      */
-
     public function __construct(PartialRepositoryInterface $repository, BlueprintManager $manager) {
         parent::__construct($repository, $manager, 'Partial');
     }

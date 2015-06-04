@@ -9,7 +9,6 @@ class CacheFilter {
      *
      * @param CacheInterface $cache
      */
-
     public function __construct(CacheInterface $cache) {
         $this->cache = $cache;
     }
@@ -21,7 +20,6 @@ class CacheFilter {
      * @param $request
      * @param $response
      */
-
     public function filter($route, $request, $response) {
         $this->cache->put($request->path(), $response->getContent());
     }

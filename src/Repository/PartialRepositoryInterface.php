@@ -15,7 +15,6 @@ interface PartialRepositoryInterface extends RepositoryInterface {
      * @throws NoResultException
      * @return Partial
      */
-
     public function findByKey($key);
 
 }

@@ -70,7 +70,6 @@ class Partial implements Validatable {
     /**
      * Constructs a new Partial.
      */
-
     public function __construct() {
         $this->versions = new ArrayCollection();
     }
@@ -80,7 +79,6 @@ class Partial implements Validatable {
      *
      * @return array
      */
-
     public function getValidationRules() {
         return [
             'key' =>[

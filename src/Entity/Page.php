@@ -96,7 +96,6 @@ class Page implements Validatable {
     /**
      * Constructs a new Page.
      */
-
     public function __construct() {
         $this->setOptions([]);
         $this->versions = new ArrayCollection();
@@ -107,7 +106,6 @@ class Page implements Validatable {
      *
      * @return array
      */
-
     public function getValidationRules() {
         return [
             'slug' => [
@@ -145,7 +143,6 @@ class Page implements Validatable {
      *
      * @return array
      */
-
     public function getOptions() {
         return json_decode($this->options, true);
     }
@@ -156,7 +153,6 @@ class Page implements Validatable {
      * @param  array|string $options
      * @return $this
      */
-
     public function setOptions($options) {
         $this->options = is_string($options) ? $options : json_encode($options, JSON_PRETTY_PRINT);
         return $this;

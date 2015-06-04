@@ -24,7 +24,6 @@ class PagesController extends VersionableCrudController {
      * @param PageRepositoryInterface $repository
      * @param BlueprintManager        $manager
      */
-
     public function __construct(PageRepositoryInterface $repository, BlueprintManager $manager) {
         parent::__construct($repository, $manager, 'Page');
     }
@@ -35,7 +34,6 @@ class PagesController extends VersionableCrudController {
      * @param string $slug the URI slug
      * @return Response
      */
-
     public function getView($slug = '/') {
         try {
             $page = $this->repository->findBySlug($slug);
@@ -51,7 +49,6 @@ class PagesController extends VersionableCrudController {
      * @param mixed $item
      * @return Response
      */
-
     public function getPreview($item) {
         $item = $this->getItem($item);
 
@@ -67,7 +64,6 @@ class PagesController extends VersionableCrudController {
      * @param mixed $item
      * @return Response
      */
-
     public function getContent($item) {
         $page = $this->getItem($item);
 

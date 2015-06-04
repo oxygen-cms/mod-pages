@@ -9,6 +9,7 @@ use Oxygen\Data\Repository\Doctrine\Publishable;
 use Oxygen\Data\Repository\Doctrine\Repository;
 use Oxygen\Data\Repository\Doctrine\SoftDeletes;
 use Oxygen\Data\Repository\Doctrine\Versions;
+use Oxygen\Data\Repository\QueryParameters;
 use Oxygen\Pages\Entity\Page;
 
 class DoctrinePageRepository extends Repository implements PageRepositoryInterface {
@@ -32,16 +33,18 @@ class DoctrinePageRepository extends Repository implements PageRepositoryInterfa
      * @throws NoResultException
      * @return Page
      */
-
     public function findBySlug($slug) {
         try {
-            $qb = $this->createScopedQueryBuilder(['excludeTrashed'])
-                ->andWhere('o.stage = :stage')
-                ->andWhere('o.slug = :slug')
-                ->setParameter('stage', Page::STAGE_PUBLISHED)
-                ->setParameter('slug', $slug);
-            return $qb->getQuery()
-                ->getSingleResult();
+            $qb = $this->getQuery(
+                $this->createSelectQuery()
+                    ->andWhere('o.stage = :stage')
+                    ->andWhere('o.slug = :slug')
+                    ->setParameter('stage', Page::STAGE_PUBLISHED)
+                    ->setParameter('slug', $slug),
+                new QueryParameters(['excludeTrashed'])
+            );
+
+            return $qb->getSingleResult();
         } catch(DoctrineNoResultException $e) {
             throw new NoResultException($e, $this->replaceQueryParameters($qb->getDQL(), $qb->getParameters()));
         }

@@ -21,7 +21,6 @@ class PagesServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-
     public function boot() {
         $this->package('oxygen/pages', 'oxygen/pages', __DIR__ . '/../resources');
         $this->entities(__DIR__ . '/Entity');
@@ -65,7 +64,6 @@ class PagesServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-
     public function register() {
         $this->app->bind('Oxygen\Pages\Repository\PageRepositoryInterface', 'Oxygen\Pages\Repository\DoctrinePageRepository');
         $this->app->bind('Oxygen\Pages\Repository\PartialRepositoryInterface', 'Oxygen\Pages\Repository\DoctrinePartialRepository');
@@ -76,7 +74,6 @@ class PagesServiceProvider extends ServiceProvider {
      *
      * @return array
      */
-
     public function provides() {
         return [];
     }

@@ -13,7 +13,6 @@ interface PageRepositoryInterface extends RepositoryInterface {
      * @param string $slug
      * @return Page
      */
-
     public function findBySlug($slug);
 
 }

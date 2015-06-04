@@ -33,7 +33,6 @@ class EntityChangedSubscriber implements EventSubscriber {
      * @param CacheInterface $cache
      * @param Repository     $config
      */
-
     public function __construct(CacheInterface $cache, Repository $config) {
         $this->cache = $cache;
         $this->config = $config;
@@ -44,7 +43,6 @@ class EntityChangedSubscriber implements EventSubscriber {
      *
      * @return array
      */
-
     public function getSubscribedEvents() {
         return [
             Events::preUpdate,
@@ -58,7 +56,6 @@ class EntityChangedSubscriber implements EventSubscriber {
      * @param LifecycleEventArgs $args
      * @return void
      */
-
     public function preUpdate(LifecycleEventArgs $args) {
         $this->invalidate($args);
     }
@@ -69,7 +66,6 @@ class EntityChangedSubscriber implements EventSubscriber {
      * @param LifecycleEventArgs $args
      * @return void
      */
-
     public function preRemove(LifecycleEventArgs $args) {
         $this->invalidate($args);
     }

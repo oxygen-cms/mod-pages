@@ -13,7 +13,6 @@ class FileCache implements CacheInterface {
      * @param string     $location
      * @param Filesystem $files
      */
-
     public function __construct($location, Filesystem $files) {
         $this->location = $location;
         $this->files = $files;
@@ -41,7 +40,6 @@ class FileCache implements CacheInterface {
      *
      * @return void
      */
-
     public function clearAll() {
         if($this->files->exists($this->location)) {
             $this->files->deleteDirectory($this->location);
@@ -55,7 +53,6 @@ class FileCache implements CacheInterface {
      * @param string $content
      * @return void
      */
-
     public function put($slug, $content) {
         if($slug === '/' || $slug === '') {
             $slug = 'index';
