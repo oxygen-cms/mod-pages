@@ -34,13 +34,15 @@ class DoctrinePartialRepository extends Repository implements PartialRepositoryI
      */
     public function findByKey($key) {
         try {
-            $qb = $this->createSelectQuery(new QueryParameters(['excludeTrashed']))
-                ->andWhere('o.stage = :stage')
-                ->andWhere('o.key = :key')
-                ->setParameter('stage', Partial::STAGE_PUBLISHED)
-                ->setParameter('key', $key);
-            return $qb->getQuery()
-                ->getSingleResult();
+            $qb = $this->getQuery(
+                $this->createSelectQuery()
+                    ->andWhere('o.stage = :stage')
+                    ->andWhere('o.key = :key')
+                    ->setParameter('stage', Partial::STAGE_PUBLISHED)
+                    ->setParameter('key', $key),
+                new QueryParameters(['excludeTrashed'])
+            );
+            return $qb->getSingleResult();
         } catch(DoctrineNoResultException $e) {
             throw new NoResultException($e, $this->replaceQueryParameters($qb->getDQL(), $qb->getParameters()));
         }

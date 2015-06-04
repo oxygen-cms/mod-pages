@@ -17,6 +17,7 @@
         "php": ">=5.4.0",
         "oxygen/core": "~0.2.0",
         "oxygen/crud": "~0.1.0",
+        "oxygen/data": "~0.2.0",
         "illuminate/support": "4.2.*"
     },
     "autoload": {
