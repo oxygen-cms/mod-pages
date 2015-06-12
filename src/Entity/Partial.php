@@ -85,7 +85,7 @@ class Partial implements Validatable {
                 'required',
                 'alpha_dot',
                 'max:50',
-                $this->getUniqueValidationRule('slug')
+                $this->getUniqueValidationRule('key')
             ],
             'title' => [
                 'required',
