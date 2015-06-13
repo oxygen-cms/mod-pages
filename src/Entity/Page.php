@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping AS ORM;
 use Oxygen\Data\Behaviour\Accessors;
 use Oxygen\Data\Behaviour\Fillable;
 use Oxygen\Data\Behaviour\PrimaryKey;
-use Oxygen\Data\Behaviour\Publishable;
+use Oxygen\Data\Behaviour\Publishes;
 use Oxygen\Data\Behaviour\Timestamps;
 use Oxygen\Data\Behaviour\SoftDeletes;
 use Oxygen\Data\Behaviour\Versions;
@@ -21,8 +21,8 @@ use Oxygen\Data\Validation\Validatable;
 
 class Page implements Validatable {
 
-    use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishable {
-        Publishable::__clone insteadof PrimaryKey;
+    use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes {
+        Publishes::__clone insteadof PrimaryKey;
     }
     use Accessors, Fillable;
 
