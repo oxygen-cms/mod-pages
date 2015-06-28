@@ -14,7 +14,7 @@ class PartialFieldSet extends FieldSet {
      * @return array
      */
     public function createFields() {
-        return $this->makeFields(
+        return $this->makeFields([
             [
                 'name'              => 'id',
                 'label'             => 'ID'
@@ -60,7 +60,7 @@ class PartialFieldSet extends FieldSet {
                     Partial::STAGE_PUBLISHED => 'Published',
                 ]
             ]
-        );
+        ]);
     }
 
     /**

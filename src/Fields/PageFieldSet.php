@@ -16,7 +16,7 @@ class PageFieldSet extends FieldSet {
      * @return array
      */
     public function createFields() {
-        return $this->makeFields(
+        return $this->makeFields([
             [
                 'name'              => 'id',
                 'label'             => 'ID'
@@ -110,7 +110,7 @@ class PageFieldSet extends FieldSet {
                     Page::STAGE_ARCHIVED => 'Archived'
                 ]
             ]
-        );
+        ]);
     }
 
     /**
