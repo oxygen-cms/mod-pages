@@ -22,7 +22,7 @@ class DoctrinePartialRepository extends Repository implements PartialRepositoryI
      *
      * @var string
      */
-    protected $entityName = 'Oxygen\Pages\Entity\Partial';
+    protected $entityName = Partial::class;
 
     /**
      * Finds a Partial based upon the key.

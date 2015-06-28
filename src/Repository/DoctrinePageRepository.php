@@ -23,7 +23,7 @@ class DoctrinePageRepository extends Repository implements PageRepositoryInterfa
      * @var string
      */
 
-    protected $entityName = 'Oxygen\Pages\Entity\Page';
+    protected $entityName = Page::class;
 
     /**
      * Finds a Page based upon the slug.
