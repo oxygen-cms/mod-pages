@@ -49,10 +49,8 @@ class PagesServiceProvider extends BaseServiceProvider {
         $this->app[PreferencesManager::class]->loadDirectory(__DIR__ . '/../resources/preferences');
 
         // Extends Blade compiler
-        $this->app['blade.compiler']->extend(function($view, $compiler) {
-            $pattern = $compiler->createMatcher('partial');
-
-            return preg_replace($pattern, '$1<?php echo $__env->model($app[\'' . PartialRepositoryInterface::class . '\']->findByKey$2, \'content\')->render(); ?>', $view);
+        $this->app['blade.compiler']->directive('partial', function($expression) {
+            return '<?php echo $__env->model($app[\'' . PartialRepositoryInterface::class . '\']->findByKey' . $expression . ', \'content\')->render(); ?>';
         });
 
         // Page Caching

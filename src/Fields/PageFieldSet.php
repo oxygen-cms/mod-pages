@@ -3,6 +3,8 @@
 
 namespace OxygenModule\Pages\Fields;
 
+use Lang;
+
 use Oxygen\Core\Form\FieldSet;
 use OxygenModule\Pages\Entity\Page;
 
