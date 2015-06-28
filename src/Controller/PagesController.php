@@ -1,18 +1,19 @@
 <?php
 
-namespace Oxygen\Pages\Controller;
+namespace OxygenModule\Pages\Controller;
 
 use App;
-use Config;
+use Oxygen\Preferences\PreferencesManager;
 use Oxygen\Crud\Controller\Publishable;
+use OxygenModule\Pages\Fields\PageFieldSet;
 use View;
 use Response;
 use Lang;
 
-use Oxygen\Core\Blueprint\Manager as BlueprintManager;
+use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Crud\Controller\VersionableCrudController;
 use Oxygen\Data\Exception\NoResultException;
-use Oxygen\Pages\Repository\PageRepositoryInterface;
+use OxygenModule\Pages\Repository\PageRepositoryInterface;
 
 class PagesController extends VersionableCrudController {
 
@@ -24,8 +25,8 @@ class PagesController extends VersionableCrudController {
      * @param PageRepositoryInterface $repository
      * @param BlueprintManager        $manager
      */
-    public function __construct(PageRepositoryInterface $repository, BlueprintManager $manager) {
-        parent::__construct($repository, $manager, 'Page');
+    public function __construct(PageRepositoryInterface $repository, BlueprintManager $manager, PageFieldSet $fields) {
+        parent::__construct($repository, $manager->get('Page'), $fields);
     }
 
     /**
@@ -34,10 +35,10 @@ class PagesController extends VersionableCrudController {
      * @param string $slug the URI slug
      * @return Response
      */
-    public function getView($slug = '/') {
+    public function getView($slug = '/', PreferencesManager $preferences) {
         try {
             $page = $this->repository->findBySlug($slug);
-            return $this->getContent($page);
+            return $this->getContent($page, $preferences);
         } catch(NoResultException $e) {
             App::abort(404, "Slug not found");
         }
@@ -52,9 +53,9 @@ class PagesController extends VersionableCrudController {
     public function getPreview($item) {
         $item = $this->getItem($item);
 
-        return View::make('oxygen/pages::pages.preview', [
+        return View::make('oxygen/mod-pages::pages.preview', [
             'item' => $item,
-            'title' => Lang::get('oxygen/pages::ui.preview')
+            'title' => Lang::get('oxygen/mod-pages::ui.preview')
         ]);
     }
 
@@ -64,13 +65,13 @@ class PagesController extends VersionableCrudController {
      * @param mixed $item
      * @return Response
      */
-    public function getContent($item) {
+    public function getContent($item, PreferencesManager $preferences) {
         $page = $this->getItem($item);
 
         $content = View::model($page, 'content')->with(['page' => $page])->render();
         $options = $page->getOptions();
 
-        return View::make(Config::get('oxygen/pages::theme'), [
+        return View::make($preferences->get('appearance.pages::theme'), [
             'page' => $page,
             'title' => $page->getTitle(),
             'content' => $content,

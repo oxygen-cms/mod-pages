@@ -1,6 +1,6 @@
 <?php
 
-namespace Oxygen\Pages\Entity;
+namespace OxygenModule\Pages\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping AS ORM;

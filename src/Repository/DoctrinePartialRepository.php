@@ -1,6 +1,6 @@
 <?php
 
-namespace Oxygen\Pages\Repository;
+namespace OxygenModule\Pages\Repository;
 
 use Doctrine\ORM\NoResultException as DoctrineNoResultException;
 use Oxygen\Data\Exception\NoResultException;
@@ -9,8 +9,7 @@ use Oxygen\Data\Repository\Doctrine\Repository;
 use Oxygen\Data\Repository\Doctrine\SoftDeletes;
 use Oxygen\Data\Repository\Doctrine\Versions;
 use Oxygen\Data\Repository\QueryParameters;
-use Oxygen\Pages\Entity\Page;
-use Oxygen\Pages\Entity\Partial;
+use OxygenModule\Pages\Entity\Partial;
 
 class DoctrinePartialRepository extends Repository implements PartialRepositoryInterface {
 

@@ -1,11 +1,12 @@
 <?php
 
-namespace Oxygen\Pages\Cache;
+namespace OxygenModule\Pages\Cache;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Illuminate\Config\Repository;
+use Illuminate\Contracts\Events\Dispatcher;
 use Oxygen\Pages\Entity\Page;
 use Oxygen\Pages\Entity\Partial;
 
@@ -16,26 +17,24 @@ class EntityChangedSubscriber implements EventSubscriber {
      *
      * @var CacheInterface
      */
-
     protected $cache;
 
     /**
      * The config.
      *
-     * @var \Illuminate\Config\Repository
+     * @var \Illuminate\Contracts\Events\Dispatcher
      */
-
-    protected $config;
+    protected $events;
 
     /**
      * Constructs the PageChangedSubscriber.
      *
-     * @param CacheInterface $cache
-     * @param Repository     $config
+     * @param CacheInterface                          $cache
+     * @param \Illuminate\Contracts\Events\Dispatcher $events
      */
-    public function __construct(CacheInterface $cache, Repository $config) {
+    public function __construct(CacheInterface $cache, Dispatcher $events) {
         $this->cache = $cache;
-        $this->config = $config;
+        $this->events = $events;
     }
 
     /**
@@ -79,11 +78,7 @@ class EntityChangedSubscriber implements EventSubscriber {
     protected function invalidate(LifecycleEventArgs $args) {
         $entity = $args->getEntity();
 
-        foreach($this->config->get('oxygen/pages::cache.entities') as $class => $callable) {
-            if(get_class($entity) == $class) {
-                $callable($entity, $this->cache);
-            }
-        }
+        $this->events->fire('oxygen.pages.cache.invalidated', [$entity, $this->cache]);
     }
 
 }

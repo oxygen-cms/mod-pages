@@ -1,12 +1,24 @@
 <?php
 
-namespace Oxygen\Pages;
+namespace OxygenModule\Pages;
 
-use Oxygen\Pages\Cache\FileCache;
 use Carbon\Carbon;
-use Oxygen\Core\Support\ServiceProvider;
+use Doctrine\ORM\EntityManager;
+use Oxygen\Core\Blueprint\BlueprintManager;
+use Oxygen\Data\BaseServiceProvider;
+use Oxygen\Preferences\PreferencesManager;
+use OxygenModule\Pages\Cache\CacheInterface;
+use OxygenModule\Pages\Cache\CacheMiddleware;
+use OxygenModule\Pages\Cache\EntityChangedSubscriber;
+use OxygenModule\Pages\Cache\FileCache;
+use OxygenModule\Pages\Entity\Page;
+use OxygenModule\Pages\Entity\Partial;
+use OxygenModule\Pages\Repository\DoctrinePageRepository;
+use OxygenModule\Pages\Repository\DoctrinePartialRepository;
+use OxygenModule\Pages\Repository\PageRepositoryInterface;
+use OxygenModule\Pages\Repository\PartialRepositoryInterface;
 
-class PagesServiceProvider extends ServiceProvider {
+class PagesServiceProvider extends BaseServiceProvider {
 
     /**
      * Indicates if loading of the provider is deferred.
@@ -22,41 +34,59 @@ class PagesServiceProvider extends ServiceProvider {
      * @return void
      */
     public function boot() {
-        $this->package('oxygen/pages', 'oxygen/pages', __DIR__ . '/../resources');
-        $this->entities(__DIR__ . '/Entity');
+        $this->loadEntitiesFrom(__DIR__ . '/Entity');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'oxygen/mod-pages');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'oxygen/mod-pages');
+
+        $this->publishes([
+            __DIR__ . '/../resources/lang' => base_path('resources/lang/vendor/oxygen/mod-pages'),
+            __DIR__ . '/../resources/views' => base_path('resources/views/vendor/oxygen/mod-pages')
+        ]);
 
         // Blueprints
-        $this->app['oxygen.blueprintManager']->loadDirectory(__DIR__ . '/../resources/blueprints');
-        $this->app['oxygen.preferences']->loadDirectory(__DIR__ . '/../resources/preferences');
+        $this->app[BlueprintManager::class]->loadDirectory(__DIR__ . '/../resources/blueprints');
+        $this->app[PreferencesManager::class]->loadDirectory(__DIR__ . '/../resources/preferences');
 
         // Extends Blade compiler
         $this->app['blade.compiler']->extend(function($view, $compiler) {
             $pattern = $compiler->createMatcher('partial');
 
-            return preg_replace($pattern, '$1<?php echo $__env->model($app[\'Oxygen\Pages\Repository\PartialRepositoryInterface\']->findByKey$2, \'content\')->render(); ?>', $view);
+            return preg_replace($pattern, '$1<?php echo $__env->model($app[\'' . PartialRepositoryInterface::class . '\']->findByKey$2, \'content\')->render(); ?>', $view);
         });
 
         // Page Caching
-        $this->app->bind('Oxygen\Pages\Cache\CacheInterface', 'Oxygen\Pages\Cache\FileCache');
-        $this->app->bindShared('Oxygen\Pages\Cache\FileCache', function($app) {
-            return new FileCache(base_path() . '/' . $app['config']->get('oxygen/pages::cache.location'), $app['files']);
+        $this->app->bind(CacheInterface::class, FileCache::class);
+        $this->app->singleton(FileCache::class, function($app) {
+            return new FileCache(base_path() . '/' . $app[PreferencesManager::class]->get('modules.pages::cache.location'), $app['files']);
         });
 
-        if($this->app['config']->get('oxygen/pages::cache.enabled') === true) {
-            $this->app['router']->filter('oxygen.cache', 'Oxygen\Pages\Cache\CacheFilter');
+        if($this->app[PreferencesManager::class]->get('modules.pages::cache.enabled') === true) {
+            $this->app['router']->middleware('oxygen.cache', CacheMiddleware::class);
 
             $callback = function($entities) {
                 $entities->getEventManager()
-                         ->addEventSubscriber($this->app->make('Oxygen\Pages\Cache\EntityChangedSubscriber'));
+                         ->addEventSubscriber($this->app->make(EntityChangedSubscriber::class));
             };
 
-            if($this->app->resolved('Doctrine\ORM\EntityManager')) {
-                $callback($this->app['Doctrine\ORM\EntityManager']);
+            if($this->app->resolved(EntityManager::class)) {
+                $callback($this->app[EntityManager::class]);
             } else {
-                $this->app->resolving('Doctrine\ORM\EntityManager', $callback);
+                $this->app->resolving(EntityManager::class, $callback);
             }
 
         }
+
+        $this->app['events']->listen('oxygen.pages.cache.invalidated', function($entity, CacheInterface $cache) {
+            if($entity instanceof Page && $entity->isPublished()) {
+                $cache->clear($entity->getSlug());
+            }
+        });
+
+        $this->app['events']->listen('oxygen.pages.cache.invalidated', function($entity, CacheInterface $cache) {
+            if($entity instanceof Partial && $entity->isPublished()) {
+                $cache->clearAll();
+            }
+        });
     }
 
     /**
@@ -65,8 +95,8 @@ class PagesServiceProvider extends ServiceProvider {
      * @return void
      */
     public function register() {
-        $this->app->bind('Oxygen\Pages\Repository\PageRepositoryInterface', 'Oxygen\Pages\Repository\DoctrinePageRepository');
-        $this->app->bind('Oxygen\Pages\Repository\PartialRepositoryInterface', 'Oxygen\Pages\Repository\DoctrinePartialRepository');
+        $this->app->bind(PageRepositoryInterface::class, DoctrinePageRepository::class);
+        $this->app->bind(PartialRepositoryInterface::class, DoctrinePartialRepository::class);
     }
 
     /**

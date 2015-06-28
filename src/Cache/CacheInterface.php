@@ -1,6 +1,6 @@
 <?php
 
-namespace Oxygen\Pages\Cache;
+namespace OxygenModule\Pages\Cache;
 
 interface CacheInterface {
 

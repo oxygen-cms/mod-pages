@@ -1,4 +1,4 @@
-@extends(Config::get('oxygen/core::layout'))
+@extends(app('oxygen.layout'))
 
 <?php
     //$usePage = false;
@@ -6,11 +6,11 @@
 
 @section('content')
 
-@include('oxygen/crud::versionable.itemHeader', ['blueprint' => $blueprint, 'item' => $item, 'title' => Lang::get('oxygen/pages::ui.preview'), 'seamless' => false])
+@include('oxygen/crud::versionable.itemHeader', ['blueprint' => $blueprint, 'item' => $item, 'title' => Lang::get('oxygen/mod-pages::ui.preview')])
 
 <div class="Block Block--noPadding">
 
-@include('oxygen/pages::pages.previewBox')
+@include('oxygen/mod-pages::pages.previewBox')
 
 </div>
 

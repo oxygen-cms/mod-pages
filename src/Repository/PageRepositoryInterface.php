@@ -1,9 +1,9 @@
 <?php
 
-namespace Oxygen\Pages\Repository;
+namespace OxygenModule\Pages\Repository;
 
 use Oxygen\Data\Repository\RepositoryInterface;
-use Oxygen\Pages\Entity\Page;
+use OxygenModule\Pages\Entity\Page;
 
 interface PageRepositoryInterface extends RepositoryInterface {
 

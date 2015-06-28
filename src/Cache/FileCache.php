@@ -1,6 +1,6 @@
 <?php
 
-namespace Oxygen\Pages\Cache;
+namespace OxygenModule\Pages\Cache;
 
 use Carbon\Carbon;
 use Illuminate\Filesystem\Filesystem;

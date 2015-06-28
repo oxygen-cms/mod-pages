@@ -1,10 +1,10 @@
 <?php
 
-namespace Oxygen\Pages\Repository;
+namespace OxygenModule\Pages\Repository;
 
 use Oxygen\Data\Exception\NoResultException;
 use Oxygen\Data\Repository\RepositoryInterface;
-use Oxygen\Pages\Entity\Partial;
+use OxygenModule\Pages\Entity\Partial;
 
 interface PartialRepositoryInterface extends RepositoryInterface {
 

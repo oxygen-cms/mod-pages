@@ -1,10 +1,11 @@
 <?php
 
-use Oxygen\Preferences\Loader\ConfigLoader;
+    use Oxygen\Preferences\Loader\Database\PreferenceRepositoryInterface;
+    use Oxygen\Preferences\Loader\DatabaseLoader;
 
-Preferences::register('modules.pages', function($schema) {
+    Preferences::register('modules.pages', function($schema) {
     $schema->setTitle('Pages');
-    $schema->setLoader(new ConfigLoader(App::make('config'), 'oxygen/pages::config'));
+    $schema->setLoader(new DatabaseLoader(app(PreferenceRepositoryInterface::class), 'modules.pages'));
 
     $schema->makeFields([
         '' => [
