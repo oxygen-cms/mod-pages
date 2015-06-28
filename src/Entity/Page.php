@@ -80,14 +80,14 @@ class Page implements Validatable {
     protected $options;
 
     /**
-     * @ORM\OneToMany(targetEntity="Oxygen\Pages\Entity\Page", mappedBy="headVersion", cascade={"persist", "remove", "merge"})
+     * @ORM\OneToMany(targetEntity="OxygenModule\Pages\Entity\Page", mappedBy="headVersion", cascade={"persist", "remove", "merge"})
      * @ORM\OrderBy({ "updatedAt" = "DESC" })
      */
 
     private $versions;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Oxygen\Pages\Entity\Page",  inversedBy="versions")
+     * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Page",  inversedBy="versions")
      * @ORM\JoinColumn(name="head_version", referencedColumnName="id")
      */
 

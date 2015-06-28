@@ -54,14 +54,14 @@ class Partial implements Validatable {
     protected $content;
 
     /**
-     * @ORM\OneToMany(targetEntity="Oxygen\Pages\Entity\Partial", mappedBy="headVersion", cascade={"persist", "remove", "merge"})
+     * @ORM\OneToMany(targetEntity="OxygenModule\Pages\Entity\Partial", mappedBy="headVersion", cascade={"persist", "remove", "merge"})
      * @ORM\OrderBy({ "updatedAt" = "DESC" })
      */
 
     private $versions;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Oxygen\Pages\Entity\Partial",  inversedBy="versions")
+     * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Partial",  inversedBy="versions")
      * @ORM\JoinColumn(name="head_version", referencedColumnName="id")
      */
 

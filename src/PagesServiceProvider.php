@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Doctrine\ORM\EntityManager;
 use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Data\BaseServiceProvider;
+use Oxygen\Preferences\PreferenceNotFoundException;
 use Oxygen\Preferences\PreferencesManager;
 use OxygenModule\Pages\Cache\CacheInterface;
 use OxygenModule\Pages\Cache\CacheMiddleware;
@@ -60,20 +61,24 @@ class PagesServiceProvider extends BaseServiceProvider {
             return new FileCache(base_path() . '/' . $app[PreferencesManager::class]->get('modules.pages::cache.location'), $app['files']);
         });
 
-        if($this->app[PreferencesManager::class]->get('modules.pages::cache.enabled') === true) {
-            $this->app['router']->middleware('oxygen.cache', CacheMiddleware::class);
+        try {
+            if($this->app[PreferencesManager::class]->get('modules.pages::cache.enabled') === true) {
+                $this->app['router']->middleware('oxygen.cache', CacheMiddleware::class);
 
-            $callback = function($entities) {
-                $entities->getEventManager()
-                         ->addEventSubscriber($this->app->make(EntityChangedSubscriber::class));
-            };
+                $callback = function($entities) {
+                    $entities->getEventManager()
+                             ->addEventSubscriber($this->app->make(EntityChangedSubscriber::class));
+                };
 
-            if($this->app->resolved(EntityManager::class)) {
-                $callback($this->app[EntityManager::class]);
-            } else {
-                $this->app->resolving(EntityManager::class, $callback);
+                if($this->app->resolved(EntityManager::class)) {
+                    $callback($this->app[EntityManager::class]);
+                } else {
+                    $this->app->resolving(EntityManager::class, $callback);
+                }
+
             }
-
+        } catch(PreferenceNotFoundException $e) {
+            // we don't cache
         }
 
         $this->app['events']->listen('oxygen.pages.cache.invalidated', function($entity, CacheInterface $cache) {
