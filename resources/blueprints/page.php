@@ -28,8 +28,6 @@ use Oxygen\Pages\Entity\Page;
         ]
     ]);
 
-    $blueprint->useTrait(new VersionableCrudTrait());
-
     $blueprint->makeAction(
         [
             'name'          => 'getView',
@@ -74,5 +72,8 @@ use Oxygen\Pages\Entity\Page;
         'name'      => 'getContent',
         'pattern'   => '{id}/content'
     ]);
+
+    $blueprint->useTrait(new VersionableCrudTrait());
+    $blueprint->useTrait(new PublishableCrudTrait());
 
 });
