@@ -55,6 +55,7 @@ class PagesController extends VersionableCrudController {
 
         return View::make('oxygen/mod-pages::pages.preview', [
             'item' => $item,
+            'fields' => $this->crudFields,
             'title' => Lang::get('oxygen/mod-pages::ui.preview')
         ]);
     }

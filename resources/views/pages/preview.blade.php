@@ -6,7 +6,7 @@
 
 @section('content')
 
-@include('oxygen/crud::versionable.itemHeader', ['blueprint' => $blueprint, 'item' => $item, 'title' => Lang::get('oxygen/mod-pages::ui.preview')])
+@include('oxygen/crud::versionable.itemHeader', ['blueprint' => $blueprint, 'fields' => $fields, 'item' => $item, 'title' => Lang::get('oxygen/mod-pages::ui.preview')])
 
 <div class="Block Block--noPadding">
 
