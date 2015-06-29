@@ -57,7 +57,7 @@
             <h1 class="Header-title">Oxygen Example Theme</h1>
         </header>
         <div class="Content">
-            {{ $content }}
+            {!! $content !!}
         </div>
         <footer class="Footer">
             <p>Created by Oxygen</p>
