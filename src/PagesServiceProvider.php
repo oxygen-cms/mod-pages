@@ -35,7 +35,6 @@ class PagesServiceProvider extends BaseServiceProvider {
      * @return void
      */
     public function boot() {
-        $this->loadEntitiesFrom(__DIR__ . '/Entity');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'oxygen/mod-pages');
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'oxygen/mod-pages');
 
@@ -98,6 +97,7 @@ class PagesServiceProvider extends BaseServiceProvider {
      * @return void
      */
     public function register() {
+        $this->loadEntitiesFrom(__DIR__ . '/Entity');
         $this->app->bind(PageRepositoryInterface::class, DoctrinePageRepository::class);
         $this->app->bind(PartialRepositoryInterface::class, DoctrinePartialRepository::class);
     }
