@@ -9,7 +9,7 @@ use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
 use Oxygen\Pages\Entity\Page;
     use OxygenModule\Pages\Controller\PagesController;
 
-    Blueprint::make('Page', function($blueprint) {
+Blueprint::make('Page', function($blueprint) {
     $blueprint->setController(PagesController::class);
     $blueprint->setIcon('file-o');
 
