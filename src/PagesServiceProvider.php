@@ -5,6 +5,7 @@ namespace OxygenModule\Pages;
 use Carbon\Carbon;
 use Doctrine\ORM\EntityManager;
 use Oxygen\Core\Blueprint\BlueprintManager;
+use Oxygen\Core\Database\AutomaticMigrator;
 use Oxygen\Data\BaseServiceProvider;
 use Oxygen\Preferences\PreferenceNotFoundException;
 use Oxygen\Preferences\PreferencesManager;
@@ -46,6 +47,7 @@ class PagesServiceProvider extends BaseServiceProvider {
         // Blueprints
         $this->app[BlueprintManager::class]->loadDirectory(__DIR__ . '/../resources/blueprints');
         $this->app[PreferencesManager::class]->loadDirectory(__DIR__ . '/../resources/preferences');
+        $this->app[AutomaticMigrator::class]->loadMigrationsFrom(__DIR__ . '/../migrations');
 
         // Extends Blade compiler
         $this->app['blade.compiler']->directive('partial', function($expression) {
