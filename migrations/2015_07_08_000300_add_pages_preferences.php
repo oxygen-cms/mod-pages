@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Oxygen\Preferences\Loader\Database\PreferenceRepositoryInterface;
 use Oxygen\Preferences\Repository;
-use App;
 
 class AddPagesPreferences extends Migration {
 
