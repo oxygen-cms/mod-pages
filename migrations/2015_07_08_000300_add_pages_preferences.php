@@ -23,7 +23,7 @@ class AddPagesPreferences extends Migration {
         $item->setKey('modules.pages');
         $data = new Repository([]);
         $data->set('cache.enabled', true);
-        $data->set('location', '/public/content/cache');
+        $data->set('cache.location', '/public/content/cache');
         $item->setPreferences($data);
         $preferences->persist($item, false);
 

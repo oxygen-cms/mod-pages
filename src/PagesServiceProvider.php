@@ -54,12 +54,6 @@ class PagesServiceProvider extends BaseServiceProvider {
             return '<?php echo $__env->model($app[\'' . PartialRepositoryInterface::class . '\']->findByKey' . $expression . ', \'content\')->render(); ?>';
         });
 
-        // Page Caching
-        $this->app->bind(CacheInterface::class, FileCache::class);
-        $this->app->singleton(FileCache::class, function($app) {
-            return new FileCache(base_path() . '/' . $app[PreferencesManager::class]->get('modules.pages::cache.location'), $app['files']);
-        });
-
         try {
             if($this->app[PreferencesManager::class]->get('modules.pages::cache.enabled') === true) {
                 $this->app['router']->middleware('oxygen.cache', CacheMiddleware::class);
@@ -102,6 +96,12 @@ class PagesServiceProvider extends BaseServiceProvider {
         $this->loadEntitiesFrom(__DIR__ . '/Entity');
         $this->app->bind(PageRepositoryInterface::class, DoctrinePageRepository::class);
         $this->app->bind(PartialRepositoryInterface::class, DoctrinePartialRepository::class);
+
+        // Page Caching
+        $this->app->bind(CacheInterface::class, FileCache::class);
+        $this->app->singleton(FileCache::class, function($app) {
+            return new FileCache(base_path() . '/' . $app[PreferencesManager::class]->get('modules.pages::cache.location'), $app['files']);
+        });
     }
 
     /**
