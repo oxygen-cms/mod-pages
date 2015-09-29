@@ -71,7 +71,7 @@ class PageChangedSubscriber implements EventSubscriber {
                 $factory = new ViewFactory($this->resolver, $this->finder, $this->events);
                 $factory->clearDependencies();
 
-                $factory->model($args->getEntity(), 'content');
+                $factory->model($args->getEntity(), 'content')->render(); // render but discard contents
                 var_dump($factory->getAndClearDependencies());
 
                 $this->compileNewViewContent($args, $args->getEntity(), $factory);
@@ -86,9 +86,9 @@ class PageChangedSubscriber implements EventSubscriber {
      * @param                                        $factory
      */
     protected function compileNewViewContent(PreUpdateEventArgs $args, $model, ViewFactory $factory) {
-        $path = $factory->pathFromModel(get_class($args->getEntity()), $args->getNewValue('id'), 'content');
+        $path = $factory->pathFromModel(get_class($args->getEntity()), $args->getEntity()->getId(), 'content');
 
-        $factory->string($args->getNewValue('content'), $path, $model->getUpdatedAt()->timestamp);
+        $factory->string($args->getNewValue('content'), $path, $model->getUpdatedAt()->timestamp)->render();
     }
 
     /**

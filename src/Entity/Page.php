@@ -5,8 +5,11 @@ namespace OxygenModule\Pages\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping AS ORM;
 use Oxygen\Data\Behaviour\Accessors;
+use Oxygen\Data\Behaviour\CacheInvalidator;
+use Oxygen\Data\Behaviour\CacheInvalidatorInterface;
 use Oxygen\Data\Behaviour\Fillable;
 use Oxygen\Data\Behaviour\PrimaryKey;
+use Oxygen\Data\Behaviour\PrimaryKeyInterface;
 use Oxygen\Data\Behaviour\Publishes;
 use Oxygen\Data\Behaviour\Timestamps;
 use Oxygen\Data\Behaviour\SoftDeletes;
@@ -19,9 +22,9 @@ use Oxygen\Data\Validation\Validatable;
  * @ORM\HasLifecycleCallbacks
  */
 
-class Page implements Validatable {
+class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface {
 
-    use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes {
+    use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator {
         Publishes::__clone insteadof PrimaryKey;
     }
     use Accessors, Fillable;
@@ -34,19 +37,16 @@ class Page implements Validatable {
     /**
      * @ORM\Column(type="string")
      */
-
     protected $slug;
 
     /**
      * @ORM\Column(type="string")
      */
-
     protected $title;
 
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-
     protected $author;
 
     /**
@@ -64,33 +64,28 @@ class Page implements Validatable {
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-
     protected $meta;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-
     protected $content;
 
     /**
      * @ORM\Column(type="text")
      */
-
     protected $options;
 
     /**
      * @ORM\OneToMany(targetEntity="OxygenModule\Pages\Entity\Page", mappedBy="headVersion", cascade={"persist", "remove", "merge"})
      * @ORM\OrderBy({ "updatedAt" = "DESC" })
      */
-
     private $versions;
 
     /**
      * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Page",  inversedBy="versions")
      * @ORM\JoinColumn(name="head_version", referencedColumnName="id")
      */
-
     private $headVersion;
 
     /**
