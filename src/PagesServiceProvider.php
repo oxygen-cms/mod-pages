@@ -13,6 +13,7 @@ use OxygenModule\Pages\Cache\CacheInterface;
 use OxygenModule\Pages\Cache\CacheMiddleware;
 use OxygenModule\Pages\Cache\EntityChangedSubscriber;
 use OxygenModule\Pages\Cache\FileCache;
+use OxygenModule\Pages\Cache\PageChangedSubscriber;
 use OxygenModule\Pages\Entity\Page;
 use OxygenModule\Pages\Entity\Partial;
 use OxygenModule\Pages\Repository\DoctrinePageRepository;
@@ -61,6 +62,8 @@ class PagesServiceProvider extends BaseServiceProvider {
                 $callback = function($entities) {
                     $entities->getEventManager()
                              ->addEventSubscriber($this->app->make(EntityChangedSubscriber::class));
+                    $entities->getEventManager()
+                             ->addEventSubscriber(new PageChangedSubscriber($this->app['view.engine.resolver'], $this->app['view.finder'], $this->app['events']));
                 };
 
                 if($this->app->resolved(EntityManager::class)) {
