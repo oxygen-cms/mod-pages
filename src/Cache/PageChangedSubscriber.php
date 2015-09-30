@@ -5,6 +5,7 @@ namespace OxygenModule\Pages\Cache;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Illuminate\Contracts\Container\Container;
@@ -65,6 +66,7 @@ class PageChangedSubscriber implements EventSubscriber {
      */
     public function preUpdate(PreUpdateEventArgs $args) {
         if($args->getEntity() instanceof Page) {
+            $page = $args->getEntity();
             if($args->hasChangedField('content')) {
                 /*var_dump($args->getOldValue('content'));
                 var_dump($args->getNewValue('content'));*/
@@ -72,10 +74,34 @@ class PageChangedSubscriber implements EventSubscriber {
                 $factory->clearDependencies();
 
                 $factory->model($args->getEntity(), 'content')->render(); // render but discard contents
-                var_dump($factory->getAndClearDependencies());
+                $oldDeps = $factory->getAndClearDependencies();
 
                 $this->compileNewViewContent($args, $args->getEntity(), $factory);
-                var_dump($factory->getAndClearDependencies());
+                $newDeps = $factory->getAndClearDependencies();
+
+                $removed = [];
+                // bad algorithm i know
+                foreach($oldDeps as $oldDep) {
+                    $found = false;
+                    foreach($newDeps as $newDep) {
+                        if($oldDep === $newDep) {
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if(!$found) {
+                        $removed[] = $oldDep;
+                    }
+                }
+
+                foreach($removed as $item) {
+                    $item->removeEntityToBeInvalidated($page);
+                    $args->getEntityManager()->persist($item);
+                }
+                foreach($newDeps as $item) {
+                    $item->addEntityToBeInvalidated($page);
+                    $args->getEntityManager()->persist($item);
+                }
             }
         }
     }
@@ -98,19 +124,19 @@ class PageChangedSubscriber implements EventSubscriber {
      * @return void
      */
     public function preRemove(LifecycleEventArgs $args) {
-        $this->invalidate($args);
-    }
+        if($args->getEntity() instanceof Page) {
+            $page = $args->getEntity();
 
-    /**
-     * Invalidates the cache.
-     *
-     * @param $args
-     */
+            $factory = new ViewFactory($this->resolver, $this->finder, $this->events);
+            $factory->clearDependencies();
+            $factory->model($page, 'content')->render(); // render but discard contents
+            $dependencies = $factory->getAndClearDependencies();
 
-    protected function invalidate(LifecycleEventArgs $args) {
-        $entity = $args->getEntity();
-
-        $this->events->fire('oxygen.pages.cache.invalidated', [$entity, $this->cache]);
+            foreach($dependencies as $item) {
+                $item->removeEntityToBeInvalidated($page);
+                $args->getEntityManager()->persist($item);
+            }
+        }
     }
 
 }

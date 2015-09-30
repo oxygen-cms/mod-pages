@@ -11,7 +11,7 @@ use Oxygen\Preferences\PreferenceNotFoundException;
 use Oxygen\Preferences\PreferencesManager;
 use OxygenModule\Pages\Cache\CacheInterface;
 use OxygenModule\Pages\Cache\CacheMiddleware;
-use OxygenModule\Pages\Cache\EntityChangedSubscriber;
+use OxygenModule\Pages\Cache\CacheInvalidationSubscriber;
 use OxygenModule\Pages\Cache\FileCache;
 use OxygenModule\Pages\Cache\PageChangedSubscriber;
 use OxygenModule\Pages\Entity\Page;
@@ -61,8 +61,6 @@ class PagesServiceProvider extends BaseServiceProvider {
 
                 $callback = function($entities) {
                     $entities->getEventManager()
-                             ->addEventSubscriber($this->app->make(EntityChangedSubscriber::class));
-                    $entities->getEventManager()
                              ->addEventSubscriber(new PageChangedSubscriber($this->app['view.engine.resolver'], $this->app['view.finder'], $this->app['events']));
                 };
 
@@ -77,15 +75,9 @@ class PagesServiceProvider extends BaseServiceProvider {
             // we don't cache
         }
 
-        $this->app['events']->listen('oxygen.pages.cache.invalidated', function($entity, CacheInterface $cache) {
+        $this->app['events']->listen('oxygen.entity.cache.invalidated', function($entity) {
             if($entity instanceof Page && $entity->isPublished()) {
-                $cache->clear($entity->getSlug());
-            }
-        });
-
-        $this->app['events']->listen('oxygen.pages.cache.invalidated', function($entity, CacheInterface $cache) {
-            if($entity instanceof Partial && $entity->isPublished()) {
-                $cache->clearAll();
+                $this->app[CacheInterface::class]->clear($entity->getSlug());
             }
         });
     }

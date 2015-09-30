@@ -4,6 +4,7 @@
 namespace OxygenModule\Pages\Cache;
 
 use Oxygen\Core\View\Factory;
+use Oxygen\Data\Behaviour\CacheInvalidatorInterface;
 
 class ViewFactory extends Factory {
 
@@ -17,9 +18,9 @@ class ViewFactory extends Factory {
     /**
      * Tells this custom view factory that the current view depends on the given entity.
      *
-     * @param \OxygenModule\Pages\Cache\CacheInvalidator $entity the entity that this view depends on
+     * @param \Oxygen\Data\Behaviour\CacheInvalidatorInterface $entity the entity that this view depends on
      */
-    public function viewDependsOnEntity(CacheInvalidator $entity) {
+    public function viewDependsOnEntity(CacheInvalidatorInterface $entity) {
         $this->viewDependsOnEntities[] = $entity;
     }
 
@@ -30,7 +31,7 @@ class ViewFactory extends Factory {
     /*
      * Returns the entities that the rendered views depended on.
      *
-     * @return array
+     * @return CacheInvalidatorInterface[]
      */
     public function getAndClearDependencies() {
         $entities = $this->viewDependsOnEntities;
