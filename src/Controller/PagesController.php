@@ -11,6 +11,7 @@ use Oxygen\Crud\Controller\Publishable;
 use OxygenModule\Pages\Cache\CacheInvalidationInterface;
 use OxygenModule\Pages\Fields\PageFieldSet;
 use View;
+use Input;
 use Lang;
 
 use Oxygen\Core\Blueprint\BlueprintManager;
@@ -22,14 +23,17 @@ class PagesController extends VersionableCrudController {
 
     use Publishable;
 
+    protected $invalidator;
+
     /**
      * Constructs the PagesController.
      *
      * @param PageRepositoryInterface $repository
      * @param BlueprintManager        $manager
      */
-    public function __construct(PageRepositoryInterface $repository, BlueprintManager $manager, PageFieldSet $fields) {
+    public function __construct(PageRepositoryInterface $repository, BlueprintManager $manager, PageFieldSet $fields, CacheInvalidationInterface $invalidator) {
         parent::__construct($repository, $manager->get('Page'), $fields);
+        $this->invalidator = $invalidator;
     }
 
     /**
@@ -90,16 +94,14 @@ class PagesController extends VersionableCrudController {
      * Updates an entity.
      *
      * @param mixed                                                $item the item
-     * @param \OxygenModule\Pages\Cache\CacheInvalidationInterface $invalidator
-     * @param \Illuminate\Http\Request                             $request
      * @param \Oxygen\Core\Contracts\Routing\ResponseFactory       $response
      * @return Response
      */
-    public function putUpdate($item, CacheInvalidationInterface $invalidator, Request $request, ResponseFactory $response) {
+    public function putUpdate($item, ResponseFactory $response) {
         $item = $this->getItem($item);
 
-        if($item->getContent() != $request->get('content')) {
-            $invalidator->contentChanged($item, $item->getContent(), $request->get('content'));
+        if($item->getContent() != Input::get('content')) {
+            $this->invalidator->contentChanged($item, $item->getContent(), Input::get('content'));
         }
 
         return parent::putUpdate($item, $response);
@@ -109,13 +111,12 @@ class PagesController extends VersionableCrudController {
      * Deletes an entity.
      *
      * @param mixed                                                $item the item
-     * @param \OxygenModule\Pages\Cache\CacheInvalidationInterface $invalidator
      * @return Response
      */
-    public function deleteForce($item, CacheInvalidationInterface $invalidator) {
+    public function deleteForce($item) {
         $item = $this->getItem($item);
-        $invalidator->pageRemoved($item);
-        
+        $this->invalidator->pageRemoved($item);
+
         return parent::deleteForce($item);
     }
 

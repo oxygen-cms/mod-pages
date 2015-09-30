@@ -51,7 +51,11 @@ class PagesServiceProvider extends BaseServiceProvider {
 
         // Extends Blade compiler
         $this->app['blade.compiler']->directive('partial', function($expression) {
-            return '<?php echo $__env->model(app(\'' . PartialRepositoryInterface::class . '\')->findByKey' . $expression . ', \'content\')->render(); ?>';
+            return '<?php $__item = app(\'' . PartialRepositoryInterface::class . '\')->findByKey' . $expression . ';
+            if(method_exists($__env, \'viewDependsOnEntity\')) {
+                $__env->viewDependsOnEntity($__item);
+            }
+            echo $__env->model($__item, \'content\')->render(); ?>';
         });
 
         try {
