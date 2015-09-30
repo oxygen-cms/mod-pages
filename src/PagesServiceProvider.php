@@ -10,12 +10,11 @@ use Oxygen\Data\BaseServiceProvider;
 use Oxygen\Preferences\PreferenceNotFoundException;
 use Oxygen\Preferences\PreferencesManager;
 use OxygenModule\Pages\Cache\CacheInterface;
+use OxygenModule\Pages\Cache\CacheInvalidationInterface;
 use OxygenModule\Pages\Cache\CacheMiddleware;
-use OxygenModule\Pages\Cache\CacheInvalidationSubscriber;
 use OxygenModule\Pages\Cache\FileCache;
-use OxygenModule\Pages\Cache\PageChangedSubscriber;
+use OxygenModule\Pages\Cache\PageCacheInvalidation;
 use OxygenModule\Pages\Entity\Page;
-use OxygenModule\Pages\Entity\Partial;
 use OxygenModule\Pages\Repository\DoctrinePageRepository;
 use OxygenModule\Pages\Repository\DoctrinePartialRepository;
 use OxygenModule\Pages\Repository\PageRepositoryInterface;
@@ -58,18 +57,6 @@ class PagesServiceProvider extends BaseServiceProvider {
         try {
             if($this->app[PreferencesManager::class]->get('modules.pages::cache.enabled') === true) {
                 $this->app['router']->middleware('oxygen.cache', CacheMiddleware::class);
-
-                $callback = function($entities) {
-                    $entities->getEventManager()
-                             ->addEventSubscriber(new PageChangedSubscriber($this->app['view.engine.resolver'], $this->app['view.finder'], $this->app['events']));
-                };
-
-                if($this->app->resolved(EntityManager::class)) {
-                    $callback($this->app[EntityManager::class]);
-                } else {
-                    $this->app->resolving(EntityManager::class, $callback);
-                }
-
             }
         } catch(PreferenceNotFoundException $e) {
             // we don't cache
@@ -94,8 +81,12 @@ class PagesServiceProvider extends BaseServiceProvider {
 
         // Page Caching
         $this->app->bind(CacheInterface::class, FileCache::class);
+        $this->app->bind(CacheInvalidationInterface::class, PageCacheInvalidation::class);
         $this->app->singleton(FileCache::class, function($app) {
             return new FileCache(base_path() . '/' . $app[PreferencesManager::class]->get('modules.pages::cache.location'), $app['files']);
+        });
+        $this->app->singleton(PageCacheInvalidation::class, function($app) {
+           return new PageCacheInvalidation($app['view.engine.resolver'], $app['view.finder'], $app['events'], $app[EntityManager::class]);
         });
     }
 

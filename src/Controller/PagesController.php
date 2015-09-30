@@ -3,11 +3,14 @@
 namespace OxygenModule\Pages\Controller;
 
 use App;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Oxygen\Core\Contracts\Routing\ResponseFactory;
 use Oxygen\Preferences\PreferencesManager;
 use Oxygen\Crud\Controller\Publishable;
+use OxygenModule\Pages\Cache\CacheInvalidationInterface;
 use OxygenModule\Pages\Fields\PageFieldSet;
 use View;
-use Response;
 use Lang;
 
 use Oxygen\Core\Blueprint\BlueprintManager;
@@ -81,6 +84,39 @@ class PagesController extends VersionableCrudController {
             'tags' => $page->getTags(),
             'meta' => $page->getMeta()
         ]);
+    }
+
+    /**
+     * Updates an entity.
+     *
+     * @param mixed                                                $item the item
+     * @param \OxygenModule\Pages\Cache\CacheInvalidationInterface $invalidator
+     * @param \Illuminate\Http\Request                             $request
+     * @param \Oxygen\Core\Contracts\Routing\ResponseFactory       $response
+     * @return Response
+     */
+    public function putUpdate($item, CacheInvalidationInterface $invalidator, Request $request, ResponseFactory $response) {
+        $item = $this->getItem($item);
+
+        if($item->getContent() != $request->get('content')) {
+            $invalidator->contentChanged($item, $item->getContent(), $request->get('content'));
+        }
+
+        return parent::putUpdate($item, $response);
+    }
+
+    /**
+     * Deletes an entity.
+     *
+     * @param mixed                                                $item the item
+     * @param \OxygenModule\Pages\Cache\CacheInvalidationInterface $invalidator
+     * @return Response
+     */
+    public function deleteForce($item, CacheInvalidationInterface $invalidator) {
+        $item = $this->getItem($item);
+        $invalidator->pageRemoved($item);
+        
+        return parent::deleteForce($item);
     }
 
 }
