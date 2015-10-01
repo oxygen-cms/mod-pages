@@ -5,14 +5,18 @@ namespace OxygenModule\Pages\Cache;
 use DateTime;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
+use Exception;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\View\Engines\EngineResolver;
 use Illuminate\View\ViewFinderInterface;
 use OxygenModule\Pages\Entity\Page;
 
 class PageCacheSubscriber implements EventSubscriber {
+
+    protected $viewFactory;
 
     /**
      * @var \Illuminate\View\Engines\EngineResolver
@@ -49,96 +53,74 @@ class PageCacheSubscriber implements EventSubscriber {
      */
     public function getSubscribedEvents() {
         return [
-            Events::prePersist,
-            Events::preUpdate,
-            Events::preRemove
+            Events::postPersist,
+            Events::onFlush
         ];
     }
 
-    /**
-     * Invalidates the cache.
-     *
-     * @param LifecycleEventArgs $args
-     * @return void
-     */
-    public function prePersist(LifecycleEventArgs $args) {
-        if($args->getEntity() instanceof Page) {
-            $page = $args->getEntity();
-            $factory = new ViewFactory($this->resolver, $this->finder, $this->events);
-            $factory->clearDependencies();
-            $factory->model($page, 'content')->render(); // render but discard contents
-            $dependencies = $factory->getAndClearDependencies();
+    public function onFlush(OnFlushEventArgs $args) {
+        $uow = $args->getEntityManager()->getUnitOfWork();
 
-            foreach($dependencies as $item) {
-                $item->addEntityToBeInvalidated($page);
-                $args->getEntityManager()->persist($item);
-            }
-        }
-    }
+        foreach($uow->getScheduledEntityUpdates() as $entity) {
+            if($entity instanceof Page) {
+                $changeSet = $uow->getEntityChangeSet($entity);
+                if(!isset($changeSet['content'])) { continue; }
+                $this->compileViewContent($entity, $changeSet['content'][0], null, $this->getView()); // render but discard contents
+                $oldDeps = $this->getView()->getAndClearDependencies();
+                $this->compileViewContent($entity, $changeSet['content'][1], null, $this->getView());
+                $newDeps = $this->getView()->getAndClearDependencies();
 
-    /**
-     * Invalidates the cache.
-     *
-     * @param PreUpdateEventArgs $args
-     * @return void
-     */
-    public function preUpdate(PreUpdateEventArgs $args) {
-        if($args->getEntity() instanceof Page) {
-            $page = $args->getEntity();
-            $factory = new ViewFactory($this->resolver, $this->finder, $this->events);
-            $factory->clearDependencies();
-
-            $this->compileViewContent($page, $args->getOldValue('updatedAt'), $args->getOldValue('content'), $factory); // render but discard contents
-            $oldDeps = $factory->getAndClearDependencies();
-
-            $this->compileViewContent($page, $args->getNewValue('updatedAt'), $args->getNewValue('content'), $factory);
-            $newDeps = $factory->getAndClearDependencies();
-
-            $removed = [];
-            // bad algorithm i know
-            foreach($oldDeps as $oldDep) {
-                $found = false;
-                foreach($newDeps as $newDep) {
-                    if($oldDep === $newDep) {
-                        $found = true;
-                        break;
+                $removed = [];
+                // bad algorithm i know
+                foreach($oldDeps as $oldDep) {
+                    $found = false;
+                    foreach($newDeps as $newDep) {
+                        if($oldDep === $newDep) {
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if(!$found) {
+                        $removed[] = $oldDep;
                     }
                 }
-                if(!$found) {
-                    $removed[] = $oldDep;
+
+                foreach($removed as $item) {
+                    $item->removeEntityToBeInvalidated($entity);
+                    $metadata = $args->getEntityManager()->getClassMetadata(get_class($item));
+                    $uow->computeChangeSet($metadata, $item);
+                }
+                foreach($newDeps as $item) {
+                    $item->addEntityToBeInvalidated($entity);
+                    $metadata = $args->getEntityManager()->getClassMetadata(get_class($item));
+                    $uow->computeChangeSet($metadata, $item);
                 }
             }
+        }
 
-            foreach($removed as $item) {
-                $item->removeEntityToBeInvalidated($page);
-                $args->getEntityManager()->persist($item);
-            }
-            foreach($newDeps as $item) {
-                $item->addEntityToBeInvalidated($page);
-                $args->getEntityManager()->persist($item);
+        foreach($uow->getScheduledEntityDeletions() as $entity) {
+            $this->getView()->model($entity, 'content')->render(); // render but discard contents
+            $dependencies = $this->getView()->getAndClearDependencies();
+
+            foreach($dependencies as $item) {
+                $item->removeEntityToBeInvalidated($entity);
+                $metadata = $args->getEntityManager()->getClassMetadata(get_class($item));
+                $uow->computeChangeSet($metadata, $item);
             }
         }
     }
 
-    /**
-     * Invalidates the cache.
-     *
-     * @param LifecycleEventArgs $args
-     * @return void
-     */
-    public function preRemove(LifecycleEventArgs $args) {
+    public function postPersist(LifecycleEventArgs $args) {
         if($args->getEntity() instanceof Page) {
-            $page = $args->getEntity();
-            $factory = new ViewFactory($this->resolver, $this->finder, $this->events);
-            $factory->clearDependencies();
-            $factory->model($page, 'content')->render(); // render but discard contents
-            $dependencies = $factory->getAndClearDependencies();
+            $this->getView()->model($args->getEntity(), 'content')->render(); // render but discard contents
+            $dependencies = $this->getView()->getAndClearDependencies();
 
             foreach($dependencies as $item) {
-                $item->removeEntityToBeInvalidated($page);
+                $item->addEntityToBeInvalidated($args->getEntity());
                 $args->getEntityManager()->persist($item);
             }
         }
+        $args->getEntityManager()->flush();
     }
 
     /**
@@ -146,11 +128,23 @@ class PageCacheSubscriber implements EventSubscriber {
      * @param string                                $content
      * @param DateTime                              $modified
      * @param \OxygenModule\Pages\Cache\ViewFactory $factory
+     * @throws \OxygenModule\Pages\Cache\ViewExecutionException
      */
-    protected function compileViewContent(Page $page, $content, DateTime $modified, ViewFactory $factory) {
+    protected function compileViewContent(Page $page, $content, $modified, ViewFactory $factory) {
         $path = $factory->pathFromModel(get_class($page), $page->getId(), 'content');
 
-        $factory->string($content, $path, $modified->getTimestamp())->render();
+        try {
+            $factory->string($content, $path, $modified == null ? 0 : $modified->getTimestamp())->render();
+        } catch(Exception $e) {
+            throw new ViewExecutionException('Page failed to compile', $e);
+        }
+    }
+
+    public function getView() {
+        if($this->viewFactory == null) {
+            $this->viewFactory = new ViewFactory($this->resolver, $this->finder, $this->events);
+        }
+        return $this->viewFactory;
     }
 
 }

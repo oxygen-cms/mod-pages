@@ -6,9 +6,11 @@ use App;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Oxygen\Core\Contracts\Routing\ResponseFactory;
+use Oxygen\Core\Http\Notification;
 use Oxygen\Preferences\PreferencesManager;
 use Oxygen\Crud\Controller\Publishable;
 use OxygenModule\Pages\Cache\CacheInvalidationInterface;
+use OxygenModule\Pages\Cache\ViewExecutionException;
 use OxygenModule\Pages\Fields\PageFieldSet;
 use View;
 use Input;
@@ -85,6 +87,24 @@ class PagesController extends VersionableCrudController {
             'tags' => $page->getTags(),
             'meta' => $page->getMeta()
         ]);
+    }
+
+    /**
+     * Updates an entity.
+     *
+     * @param mixed                                          $item the item
+     * @param \Oxygen\Core\Contracts\Routing\ResponseFactory $response
+     * @return \Illuminate\Http\Response
+     */
+    public function putUpdate($item, ResponseFactory $response) {
+        try {
+            parent::putUpdate($item, $response);
+        } catch(ViewExecutionException $e) {
+            return $response->notification(
+                new Notification('PHP Error in Page Content', Notification::FAILED),
+                ['input' => true]
+            );
+        }
     }
 
 }
