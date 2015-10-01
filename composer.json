@@ -35,7 +35,7 @@
         "providers": [
             {
                 "name": "Pages",
-                "class": "ModuleOxygen\\Pages\\PagesServiceProvider",
+                "class": "OxygenModule\\Pages\\PagesServiceProvider",
                 "description": "Adds Pages & Partials to the CMS"
             }
         ]
