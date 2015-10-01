@@ -23,17 +23,14 @@ class PagesController extends VersionableCrudController {
 
     use Publishable;
 
-    protected $invalidator;
-
     /**
      * Constructs the PagesController.
      *
      * @param PageRepositoryInterface $repository
      * @param BlueprintManager        $manager
      */
-    public function __construct(PageRepositoryInterface $repository, BlueprintManager $manager, PageFieldSet $fields, CacheInvalidationInterface $invalidator) {
+    public function __construct(PageRepositoryInterface $repository, BlueprintManager $manager, PageFieldSet $fields) {
         parent::__construct($repository, $manager->get('Page'), $fields);
-        $this->invalidator = $invalidator;
     }
 
     /**
@@ -88,36 +85,6 @@ class PagesController extends VersionableCrudController {
             'tags' => $page->getTags(),
             'meta' => $page->getMeta()
         ]);
-    }
-
-    /**
-     * Updates an entity.
-     *
-     * @param mixed                                                $item the item
-     * @param \Oxygen\Core\Contracts\Routing\ResponseFactory       $response
-     * @return Response
-     */
-    public function putUpdate($item, ResponseFactory $response) {
-        $item = $this->getItem($item);
-
-        if($item->getContent() != Input::get('content')) {
-            $this->invalidator->contentChanged($item, $item->getContent(), Input::get('content'));
-        }
-
-        return parent::putUpdate($item, $response);
-    }
-
-    /**
-     * Deletes an entity.
-     *
-     * @param mixed                                                $item the item
-     * @return Response
-     */
-    public function deleteForce($item) {
-        $item = $this->getItem($item);
-        $this->invalidator->pageRemoved($item);
-
-        return parent::deleteForce($item);
     }
 
 }

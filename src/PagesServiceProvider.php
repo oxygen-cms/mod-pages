@@ -14,6 +14,7 @@ use OxygenModule\Pages\Cache\CacheInvalidationInterface;
 use OxygenModule\Pages\Cache\CacheMiddleware;
 use OxygenModule\Pages\Cache\FileCache;
 use OxygenModule\Pages\Cache\PageCacheInvalidation;
+use OxygenModule\Pages\Cache\PageCacheSubscriber;
 use OxygenModule\Pages\Entity\Page;
 use OxygenModule\Pages\Repository\DoctrinePageRepository;
 use OxygenModule\Pages\Repository\DoctrinePartialRepository;
@@ -61,6 +62,15 @@ class PagesServiceProvider extends BaseServiceProvider {
         try {
             if($this->app[PreferencesManager::class]->get('modules.pages::cache.enabled') === true) {
                 $this->app['router']->middleware('oxygen.cache', CacheMiddleware::class);
+                $function = function($entities) {
+                    $entities->getEventManager()
+                             ->addEventSubscriber(app(PageCacheSubscriber::class));
+                };
+                if($this->app->resolved(EntityManager::class)) {
+                    $function($this->app[EntityManager::class]);
+                } else {
+                    $this->app->resolving(EntityManager::class, $function);
+                }
             }
         } catch(PreferenceNotFoundException $e) {
             // we don't cache
@@ -85,12 +95,11 @@ class PagesServiceProvider extends BaseServiceProvider {
 
         // Page Caching
         $this->app->bind(CacheInterface::class, FileCache::class);
-        $this->app->bind(CacheInvalidationInterface::class, PageCacheInvalidation::class);
         $this->app->singleton(FileCache::class, function($app) {
             return new FileCache(base_path() . '/' . $app[PreferencesManager::class]->get('modules.pages::cache.location'), $app['files']);
         });
-        $this->app->singleton(PageCacheInvalidation::class, function($app) {
-           return new PageCacheInvalidation($app['view.engine.resolver'], $app['view.finder'], $app['events'], $app[EntityManager::class]);
+        $this->app->singleton(PageCacheSubscriber::class, function($app) {
+            return new PageCacheSubscriber($app['view.engine.resolver'], $app['view.finder'], $app['events']);
         });
     }
 
