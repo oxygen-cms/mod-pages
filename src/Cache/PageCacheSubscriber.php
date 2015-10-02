@@ -12,11 +12,14 @@ use Exception;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\View\Engines\EngineResolver;
 use Illuminate\View\ViewFinderInterface;
+use Oxygen\Data\Cache\CacheSettingsRepositoryInterface;
 use OxygenModule\Pages\Entity\Page;
 
 class PageCacheSubscriber implements EventSubscriber {
 
     protected $viewFactory;
+
+    protected $cacheSettings;
 
     /**
      * @var \Illuminate\View\Engines\EngineResolver
@@ -40,10 +43,11 @@ class PageCacheSubscriber implements EventSubscriber {
      * @param \Illuminate\View\ViewFinderInterface    $finder
      * @param \Illuminate\Contracts\Events\Dispatcher $events
      */
-    public function __construct(EngineResolver $resolver, ViewFinderInterface $finder, Dispatcher $events) {
+    public function __construct(EngineResolver $resolver, ViewFinderInterface $finder, Dispatcher $events, CacheSettingsRepositoryInterface $cacheSettings) {
         $this->resolver = $resolver;
         $this->finder = $finder;
         $this->events = $events;
+        $this->cacheSettings = $cacheSettings;
     }
 
     /**
@@ -70,31 +74,26 @@ class PageCacheSubscriber implements EventSubscriber {
                 $this->compileViewContent($entity, $changeSet['content'][1], null, $this->getView());
                 $newDeps = $this->getView()->getAndClearDependencies();
 
-                $removed = [];
-                // bad algorithm i know
-                foreach($oldDeps as $oldDep) {
-                    $found = false;
-                    foreach($newDeps as $newDep) {
-                        if($oldDep === $newDep) {
-                            $found = true;
-                            break;
-                        }
-                    }
-                    if(!$found) {
-                        $removed[] = $oldDep;
-                    }
-                }
+                $entitiesRemoved = $this->arrayRemoved($oldDeps['entities'], $newDeps['entities']);
+                $classesRemoved = $this->arrayRemoved($oldDeps['classes'], $newDeps['classes']);
 
-                foreach($removed as $item) {
+                foreach($entitiesRemoved as $item) {
                     $item->removeEntityToBeInvalidated($entity);
                     $metadata = $args->getEntityManager()->getClassMetadata(get_class($item));
                     $uow->computeChangeSet($metadata, $item);
                 }
-                foreach($newDeps as $item) {
+                foreach($newDeps['entities'] as $item) {
                     $item->addEntityToBeInvalidated($entity);
                     $metadata = $args->getEntityManager()->getClassMetadata(get_class($item));
                     $uow->computeChangeSet($metadata, $item);
                 }
+                foreach($classesRemoved as $class) {
+                    $this->cacheSettings->remove($class, $entity);
+                }
+                foreach($newDeps['classes'] as $class) {
+                    $this->cacheSettings->add($class, ['id' => $entity->getId(), 'class' => get_class($entity)]);
+                }
+                $this->cacheSettings->persist();
             }
         }
 
@@ -108,6 +107,24 @@ class PageCacheSubscriber implements EventSubscriber {
                 $uow->computeChangeSet($metadata, $item);
             }
         }
+    }
+
+    private function arrayRemoved($old, $new) {
+        $removed = [];
+        // bad algorithm i know
+        foreach($old as $oldItem) {
+            $found = false;
+            foreach($new as $newItem) {
+                if($oldItem === $newItem) {
+                    $found = true;
+                    break;
+                }
+            }
+            if(!$found) {
+                $removed[] = $oldItem;
+            }
+        }
+        return $removed;
     }
 
     public function postPersist(LifecycleEventArgs $args) {

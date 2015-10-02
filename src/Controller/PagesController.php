@@ -98,7 +98,7 @@ class PagesController extends VersionableCrudController {
      */
     public function putUpdate($item, ResponseFactory $response) {
         try {
-            parent::putUpdate($item, $response);
+            return parent::putUpdate($item, $response);
         } catch(ViewExecutionException $e) {
             return $response->notification(
                 new Notification('PHP Error in Page Content', Notification::FAILED),
