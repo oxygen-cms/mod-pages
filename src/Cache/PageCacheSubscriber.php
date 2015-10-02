@@ -91,20 +91,26 @@ class PageCacheSubscriber implements EventSubscriber {
                     $this->cacheSettings->remove($class, $entity);
                 }
                 foreach($newDeps['classes'] as $class) {
-                    $this->cacheSettings->add($class, ['id' => $entity->getId(), 'class' => get_class($entity)]);
+                    $this->cacheSettings->add($class, $entity);
                 }
-                $this->cacheSettings->persist();
+                $this->cacheSettings->persist(true);
             }
         }
 
         foreach($uow->getScheduledEntityDeletions() as $entity) {
-            $this->getView()->model($entity, 'content')->render(); // render but discard contents
-            $dependencies = $this->getView()->getAndClearDependencies();
+            if($entity instanceof Page) {
+                $this->getView()->model($entity, 'content')->render(); // render but discard contents
+                $dependencies = $this->getView()->getAndClearDependencies();
 
-            foreach($dependencies as $item) {
-                $item->removeEntityToBeInvalidated($entity);
-                $metadata = $args->getEntityManager()->getClassMetadata(get_class($item));
-                $uow->computeChangeSet($metadata, $item);
+                foreach($dependencies['entities'] as $item) {
+                    $item->removeEntityToBeInvalidated($entity);
+                    $metadata = $args->getEntityManager()->getClassMetadata(get_class($item));
+                    $uow->computeChangeSet($metadata, $item);
+                }
+                foreach($dependencies['classes'] as $class) {
+                    $this->cacheSettings->remove($class, $entity);
+                }
+                $this->cacheSettings->persist(true);
             }
         }
     }
@@ -132,10 +138,14 @@ class PageCacheSubscriber implements EventSubscriber {
             $this->getView()->model($args->getEntity(), 'content')->render(); // render but discard contents
             $dependencies = $this->getView()->getAndClearDependencies();
 
-            foreach($dependencies as $item) {
+            foreach($dependencies['entities'] as $item) {
                 $item->addEntityToBeInvalidated($args->getEntity());
                 $args->getEntityManager()->persist($item);
             }
+            foreach($dependencies['classes'] as $class) {
+                $this->cacheSettings->add($class, $args->getEntity());
+            }
+            $this->cacheSettings->persist();
         }
         $args->getEntityManager()->flush();
     }

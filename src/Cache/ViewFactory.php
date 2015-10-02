@@ -13,14 +13,14 @@ class ViewFactory extends Factory {
      *
      * @var array
      */
-    protected $viewDependsOnEntities;
+    protected $viewDependsOnEntities = [];
 
     /**
      * The current view depends on these classes.
      *
      * @var array
      */
-    protected $viewDependsOnAllEntities;
+    protected $viewDependsOnAllEntities = [];
 
     /**
      * Tells this custom view factory that the current view depends on the given entity.
@@ -36,12 +36,8 @@ class ViewFactory extends Factory {
      *
      * @param string $className the class of entity that this view depends on
      */
-    public function viewDependsOnAllEntity($className) {
+    public function viewDependsOnAllEntities($className) {
         $this->viewDependsOnAllEntities[] = $className;
-    }
-
-    public function clearDependencies() {
-        $this->viewDependsOnEntities = [];
     }
 
     /*
