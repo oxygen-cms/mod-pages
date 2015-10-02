@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManager;
 use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Core\Database\AutomaticMigrator;
 use Oxygen\Data\BaseServiceProvider;
+use Oxygen\Data\Cache\CacheSettingsRepositoryInterface;
 use Oxygen\Preferences\PreferenceNotFoundException;
 use Oxygen\Preferences\PreferencesManager;
 use OxygenModule\Pages\Cache\CacheInterface;
@@ -99,7 +100,7 @@ class PagesServiceProvider extends BaseServiceProvider {
             return new FileCache(base_path() . '/' . $app[PreferencesManager::class]->get('modules.pages::cache.location'), $app['files']);
         });
         $this->app->singleton(PageCacheSubscriber::class, function($app) {
-            return new PageCacheSubscriber($app['view.engine.resolver'], $app['view.finder'], $app['events']);
+            return new PageCacheSubscriber($app['view.engine.resolver'], $app['view.finder'], $app['events'], $app[CacheSettingsRepositoryInterface::class]);
         });
     }
 
