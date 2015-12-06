@@ -163,7 +163,7 @@ class PageCacheSubscriber implements EventSubscriber {
         try {
             $factory->string($content, $path, $modified == null ? 0 : $modified->getTimestamp())->render();
         } catch(Exception $e) {
-            throw new ViewExecutionException('Page failed to compile', $e);
+            throw new ViewExecutionException('Page failed to compile', 0, $e);
         }
     }
 

@@ -14,6 +14,7 @@ use OxygenModule\Pages\Cache\ViewExecutionException;
 use OxygenModule\Pages\Fields\PageFieldSet;
 use View;
 use Input;
+use Log;
 use Lang;
 
 use Oxygen\Core\Blueprint\BlueprintManager;
@@ -100,6 +101,8 @@ class PagesController extends VersionableCrudController {
         try {
             return parent::putUpdate($item, $response);
         } catch(ViewExecutionException $e) {
+            Log::error($e);
+            Log::error($e->getPrevious());
             return $response->notification(
                 new Notification('PHP Error in Page Content', Notification::FAILED),
                 ['input' => true]
