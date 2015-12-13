@@ -61,8 +61,8 @@ class PagesServiceProvider extends BaseServiceProvider {
         });
 
         try {
+            $this->app['router']->middleware('oxygen.cache', CacheMiddleware::class);
             if($this->app[PreferencesManager::class]->get('modules.pages::cache.enabled') === true) {
-                $this->app['router']->middleware('oxygen.cache', CacheMiddleware::class);
                 $this->extendEntityManager(function($entities) {
                     $entities->getEventManager()
                              ->addEventSubscriber(app(PageCacheSubscriber::class));
