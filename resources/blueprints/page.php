@@ -58,11 +58,6 @@ Blueprint::make('Page', function($blueprint) {
         }
     ]);
 
-    $blueprint->makeAction([
-        'name'      => 'getContent',
-        'pattern'   => '{id}/content'
-    ]);
-
     $blueprint->useTrait(new PreviewableCrudTrait());
     $blueprint->useTrait(new VersionableCrudTrait());
     $blueprint->useTrait(new PublishableCrudTrait());
