@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Oxygen\Core\Contracts\Routing\ResponseFactory;
 use Oxygen\Core\Http\Notification;
+use Oxygen\Crud\Controller\Previewable;
 use Oxygen\Preferences\PreferencesManager;
 use Oxygen\Crud\Controller\Publishable;
 use OxygenModule\Pages\Cache\CacheInvalidationInterface;
@@ -24,7 +25,7 @@ use OxygenModule\Pages\Repository\PageRepositoryInterface;
 
 class PagesController extends VersionableCrudController {
 
-    use Publishable;
+    use Publishable, Previewable;
 
     /**
      * Constructs the PagesController.
@@ -39,8 +40,9 @@ class PagesController extends VersionableCrudController {
     /**
      * View a page with a theme.
      *
-     * @param string $slug the URI slug
-     * @return Response
+     * @param string                                 $slug the URI slug
+     * @param \Oxygen\Preferences\PreferencesManager $preferences
+     * @return \Illuminate\Http\Response
      */
     public function getView($slug = '/', PreferencesManager $preferences) {
         try {
@@ -52,31 +54,17 @@ class PagesController extends VersionableCrudController {
     }
 
     /**
-     * Preview the page.
-     *
-     * @param mixed $item
-     * @return Response
-     */
-    public function getPreview($item) {
-        $item = $this->getItem($item);
-
-        return View::make('oxygen/mod-pages::pages.preview', [
-            'item' => $item,
-            'fields' => $this->crudFields,
-            'title' => Lang::get('oxygen/mod-pages::ui.preview')
-        ]);
-    }
-
-    /**
      * Displays the page content.
+     * This is also used by the Previewable trait to get load inside an <iframe>.
      *
-     * @param mixed $item
-     * @return Response
+     * @param mixed                                  $item
+     * @param \Oxygen\Preferences\PreferencesManager $preferences
+     * @return \Illuminate\Http\Response
      */
     public function getContent($item, PreferencesManager $preferences) {
         $page = $this->getItem($item);
 
-        $content = View::model($page, 'content')->with(['page' => $page])->render();
+        $content = View::model($page, $this->crudFields->getContentFieldName())->with(['page' => $page])->render();
         $options = $page->getOptions();
 
         return View::make($preferences->get('appearance.pages::theme'), [

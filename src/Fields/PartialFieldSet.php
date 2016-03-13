@@ -3,10 +3,11 @@
 
 namespace OxygenModule\Pages\Fields;
 
+use Oxygen\Core\Form\ContentFieldName;
 use Oxygen\Core\Form\FieldSet;
 use OxygenModule\Pages\Entity\Partial;
 
-class PartialFieldSet extends FieldSet {
+class PartialFieldSet extends FieldSet implements ContentFieldName {
 
     /**
      * Creates the fields in the set.
@@ -70,5 +71,14 @@ class PartialFieldSet extends FieldSet {
      */
     public function getTitleFieldName() {
         return 'title';
+    }
+
+    /**
+     * Returns the name of the field that contains the content.
+     *
+     * @return string
+     */
+    public function getContentFieldName() {
+        return 'content';
     }
 }

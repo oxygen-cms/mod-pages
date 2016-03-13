@@ -5,10 +5,11 @@ namespace OxygenModule\Pages\Fields;
 
 use Lang;
 
+use Oxygen\Core\Form\ContentFieldName;
 use Oxygen\Core\Form\FieldSet;
 use OxygenModule\Pages\Entity\Page;
 
-class PageFieldSet extends FieldSet {
+class PageFieldSet extends FieldSet implements ContentFieldName {
 
     /**
      * Creates the fields in the set.
@@ -120,5 +121,14 @@ class PageFieldSet extends FieldSet {
      */
     public function getTitleFieldName() {
         return 'title';
+    }
+
+    /**
+     * Returns the name of the field that contains the content.
+     *
+     * @return string
+     */
+    public function getContentFieldName() {
+        return 'content';
     }
 }

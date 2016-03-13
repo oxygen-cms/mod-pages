@@ -18,9 +18,8 @@ Blueprint::make('Page', function($blueprint) {
             'getCreate', 'getTrash'
         ],
         'item' => [
-            'getView',
             'getPreview',
-            'getUpdate,More' => ['postPublish', 'getInfo', 'deleteDelete', 'postRestore', 'deleteForce'],
+            'getUpdate,More' => ['postPublish', 'getInfo', 'getView', 'deleteDelete', 'postRestore', 'deleteForce'],
             'Version' => ['postMakeDraft', 'postNewVersion', 'postMakeHeadVersion']
         ],
         'versionList' => [
@@ -48,7 +47,7 @@ Blueprint::make('Page', function($blueprint) {
     );
     $blueprint->makeToolbarItem([
         'action'        => 'getView',
-        'label'         => 'View',
+        'label'         => 'View on actual site',
         'icon'          => 'file-o',
         'shouldRenderCallback' => function(ActionToolbarItem $item, array $arguments) {
             return
@@ -64,7 +63,7 @@ Blueprint::make('Page', function($blueprint) {
     ]);
     $blueprint->makeToolbarItem([
         'action'        => 'getPreview',
-        'label'         => 'Preview',
+        'label'         => 'View',
         'icon'          => 'eye'
     ]);
 
