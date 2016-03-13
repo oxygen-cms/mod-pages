@@ -4,10 +4,11 @@ use Oxygen\Core\Action\Action;
 use Oxygen\Core\Action\Group;
 use Oxygen\Core\Action\Factory\ActionFactory;
 use Oxygen\Core\Html\Toolbar\ActionToolbarItem;
+use Oxygen\Crud\BlueprintTrait\PreviewableCrudTrait;
 use Oxygen\Crud\BlueprintTrait\PublishableCrudTrait;
 use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
 use Oxygen\Pages\Entity\Page;
-    use OxygenModule\Pages\Controller\PagesController;
+use OxygenModule\Pages\Controller\PagesController;
 
 Blueprint::make('Page', function($blueprint) {
     $blueprint->setController(PagesController::class);
@@ -58,20 +59,11 @@ Blueprint::make('Page', function($blueprint) {
     ]);
 
     $blueprint->makeAction([
-        'name'      => 'getPreview',
-        'pattern'   => '{id}/preview'
-    ]);
-    $blueprint->makeToolbarItem([
-        'action'        => 'getPreview',
-        'label'         => 'View',
-        'icon'          => 'eye'
-    ]);
-
-    $blueprint->makeAction([
         'name'      => 'getContent',
         'pattern'   => '{id}/content'
     ]);
 
+    $blueprint->useTrait(new PreviewableCrudTrait());
     $blueprint->useTrait(new VersionableCrudTrait());
     $blueprint->useTrait(new PublishableCrudTrait());
 

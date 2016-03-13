@@ -1,9 +1,10 @@
 <?php
 
+use Oxygen\Crud\BlueprintTrait\PreviewableCrudTrait;
 use Oxygen\Crud\BlueprintTrait\PublishableCrudTrait;
 use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
 use Oxygen\Pages\Entity\Partial;
-    use OxygenModule\Pages\Controller\PartialsController;
+use OxygenModule\Pages\Controller\PartialsController;
 
 Blueprint::make('Partial', function($blueprint) {
     $blueprint->setController(PartialsController::class);
@@ -14,6 +15,7 @@ Blueprint::make('Partial', function($blueprint) {
             'getCreate', 'getTrash'
         ],
         'item' => [
+            'getPreview',
             'getUpdate,More' => ['getInfo', 'postPublish', 'deleteDelete', 'postRestore', 'deleteForce'],
             'Version' => ['postMakeDraft', 'postNewVersion', 'postMakeHeadVersion']
         ],
@@ -22,6 +24,7 @@ Blueprint::make('Partial', function($blueprint) {
         ]
     ]);
 
+    $blueprint->useTrait(new PreviewableCrudTrait());
     $blueprint->useTrait(new VersionableCrudTrait());
     $blueprint->useTrait(new PublishableCrudTrait());
 });
