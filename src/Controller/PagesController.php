@@ -25,7 +25,8 @@ use OxygenModule\Pages\Repository\PageRepositoryInterface;
 
 class PagesController extends VersionableCrudController {
 
-    use Publishable, Previewable;
+    use Publishable;
+    use Previewable { getContent as getPreviewContent; }
 
     /**
      * Constructs the PagesController.
@@ -63,15 +64,18 @@ class PagesController extends VersionableCrudController {
      */
     public function getContent($item, PreferencesManager $preferences) {
         $page = $this->getItem($item);
+        $content = $this->getPreviewContent($page)->render();
 
-        $content = View::model($page, $this->crudFields->getContentFieldName())->with(['page' => $page])->render();
-        $options = $page->getOptions();
+        // if we are doing a quick preview of just the content
+        if(Input::has('content')) {
+            return view($preferences->get('appearance.pages::contentView'))->with('content', $content);
+        }
 
-        return View::make($preferences->get('appearance.pages::theme'), [
+        return view($preferences->get('appearance.pages::theme'), [
             'page' => $page,
             'title' => $page->getTitle(),
             'content' => $content,
-            'options' => $options,
+            'options' => $page->getOptions(),
             'description' => $page->getDescription(),
             'tags' => $page->getTags(),
             'meta' => $page->getMeta()

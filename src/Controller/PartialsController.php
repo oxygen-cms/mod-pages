@@ -8,10 +8,12 @@ use Oxygen\Crud\Controller\Publishable;
 use Oxygen\Crud\Controller\VersionableCrudController;
 use OxygenModule\Pages\Repository\PartialRepositoryInterface;
 use OxygenModule\Pages\Fields\PartialFieldSet;
+use Oxygen\Preferences\PreferencesManager;
 
 class PartialsController extends VersionableCrudController {
 
-    use Publishable, Previewable;
+    use Publishable;
+    use Previewable { getContent as getPreviewContent; }
 
     /**
      * Constructs the PagesController.
@@ -21,6 +23,18 @@ class PartialsController extends VersionableCrudController {
      */
     public function __construct(PartialRepositoryInterface $repository, BlueprintManager $manager, PartialFieldSet $fields) {
         parent::__construct($repository, $manager->get('Partial'), $fields);
+    }
+
+    /**
+     * Renders the content for this resource as HTML.
+     *
+     * @param $item
+     * @return Response
+     */
+    public function getContent($item, PreferencesManager $preferences) {
+        $content = $this->getPreviewContent($item)->render();
+
+        return view($preferences->get('appearance.pages::contentView'))->with('content', $content);
     }
 
 }
