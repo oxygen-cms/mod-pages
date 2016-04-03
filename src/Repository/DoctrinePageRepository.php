@@ -33,19 +33,19 @@ class DoctrinePageRepository extends Repository implements PageRepositoryInterfa
      * @return Page
      */
     public function findBySlug($slug) {
-        try {
-            $qb = $this->getQuery(
-                $this->createSelectQuery()
-                    ->andWhere('o.stage = :stage')
-                    ->andWhere('o.slug = :slug')
-                    ->setParameter('stage', Page::STAGE_PUBLISHED)
-                    ->setParameter('slug', $slug),
-                new QueryParameters(['excludeTrashed'])
-            );
+        $q = $this->getQuery(
+            $this->createSelectQuery()
+                 ->andWhere('o.stage = :stage')
+                 ->andWhere('o.slug = :slug')
+                 ->setParameter('stage', Page::STAGE_PUBLISHED)
+                 ->setParameter('slug', $slug),
+            new QueryParameters(['excludeTrashed'])
+        );
 
-            return $qb->getSingleResult();
+        try {
+            return $q->getSingleResult();
         } catch(DoctrineNoResultException $e) {
-            throw new NoResultException($e, $this->replaceQueryParameters($qb->getDQL(), $qb->getParameters()));
+            throw $this->makeNoResultException($e, $q);
         }
     }
 

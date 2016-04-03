@@ -8,7 +8,7 @@ use Illuminate\Http\Response;
 use Oxygen\Core\Contracts\Routing\ResponseFactory;
 use Oxygen\Core\Http\Notification;
 use Oxygen\Crud\Controller\Previewable;
-use Oxygen\Preferences\PreferencesManager;
+use Preferences;
 use Oxygen\Crud\Controller\Publishable;
 use OxygenModule\Pages\Cache\CacheInvalidationInterface;
 use OxygenModule\Pages\Cache\ViewExecutionException;
@@ -42,13 +42,12 @@ class PagesController extends VersionableCrudController {
      * View a page with a theme.
      *
      * @param string                                 $slug the URI slug
-     * @param \Oxygen\Preferences\PreferencesManager $preferences
      * @return \Illuminate\Http\Response
      */
-    public function getView($slug = '/', PreferencesManager $preferences) {
+    public function getView($slug = '/') {
         try {
             $page = $this->repository->findBySlug($slug);
-            return $this->getContent($page, $preferences);
+            return $this->getContent($page);
         } catch(NoResultException $e) {
             App::abort(404, "Slug not found");
         }
@@ -59,26 +58,28 @@ class PagesController extends VersionableCrudController {
      * This is also used by the Previewable trait to get load inside an <iframe>.
      *
      * @param mixed                                  $item
-     * @param \Oxygen\Preferences\PreferencesManager $preferences
      * @return \Illuminate\Http\Response
      */
-    public function getContent($item, PreferencesManager $preferences) {
-        $page = $this->getItem($item);
-        $content = $this->getPreviewContent($page)->render();
-
-        // if we are doing a quick preview of just the content
-        if(Input::has('content')) {
-            return view($preferences->get('appearance.pages::contentView'))->with('content', $content);
+    public function getContent($item = null) {
+        if($item != null) {
+            $item = $this->getItem($item);
         }
 
-        return view($preferences->get('appearance.pages::theme'), [
-            'page' => $page,
-            'title' => $page->getTitle(),
+        $content = $this->getPreviewContent($item)->render();
+
+        // if we are doing a quick preview of just the content
+        if(Input::has('content') || $item == null) {
+            return view(Preferences::get('appearance.pages::contentView'))->with('content', $content);
+        }
+
+        return view(Preferences::get('appearance.pages::theme'), [
+            'page' => $item,
+            'title' => $item->getTitle(),
             'content' => $content,
-            'options' => $page->getOptions(),
-            'description' => $page->getDescription(),
-            'tags' => $page->getTags(),
-            'meta' => $page->getMeta()
+            'options' => $item->getOptions(),
+            'description' => $item->getDescription(),
+            'tags' => $item->getTags(),
+            'meta' => $item->getMeta()
         ]);
     }
 

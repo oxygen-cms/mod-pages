@@ -8,7 +8,7 @@ use Oxygen\Crud\Controller\Publishable;
 use Oxygen\Crud\Controller\VersionableCrudController;
 use OxygenModule\Pages\Repository\PartialRepositoryInterface;
 use OxygenModule\Pages\Fields\PartialFieldSet;
-use Oxygen\Preferences\PreferencesManager;
+use Preferences;
 
 class PartialsController extends VersionableCrudController {
 
@@ -31,10 +31,10 @@ class PartialsController extends VersionableCrudController {
      * @param $item
      * @return Response
      */
-    public function getContent($item, PreferencesManager $preferences) {
+    public function getContent($item = null) {
         $content = $this->getPreviewContent($item)->render();
 
-        return view($preferences->get('appearance.pages::contentView'))->with('content', $content);
+        return view(Preferences::get('appearance.pages::contentView'))->with('content', $content);
     }
 
 }
