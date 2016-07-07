@@ -68,7 +68,7 @@ class PagesServiceProvider extends BaseServiceProvider {
                              ->addEventSubscriber(app(PageCacheSubscriber::class));
                 });
             }
-        } catch(PreferenceNotFoundException $e) {
+        } catch(\Exception $e) {
             // we don't cache
         }
 
