@@ -13,7 +13,7 @@ use Preferences;
 class PartialsController extends VersionableCrudController {
 
     use Publishable;
-    use Previewable { getContent as getPreviewContent; }
+    use Previewable;
 
     /**
      * Constructs the PagesController.
@@ -25,15 +25,7 @@ class PartialsController extends VersionableCrudController {
         parent::__construct($repository, $manager->get('Partial'), $fields);
     }
 
-    /**
-     * Renders the content for this resource as HTML.
-     *
-     * @param $item
-     * @return Response
-     */
-    public function getContent($item = null) {
-        $content = $this->getPreviewContent($item)->render();
-
+    protected function decoratePreviewContent($content) {
         return view(Preferences::get('appearance.pages::contentView'))->with('content', $content);
     }
 

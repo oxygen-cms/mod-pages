@@ -26,7 +26,7 @@ use OxygenModule\Pages\Repository\PageRepositoryInterface;
 class PagesController extends VersionableCrudController {
 
     use Publishable;
-    use Previewable { getContent as getPreviewContent; }
+    use Previewable;
 
     /**
      * Constructs the PagesController.
@@ -53,25 +53,7 @@ class PagesController extends VersionableCrudController {
         }
     }
 
-    /**
-     * Displays the page content.
-     * This is also used by the Previewable trait to get load inside an <iframe>.
-     *
-     * @param mixed                                  $item
-     * @return \Illuminate\Http\Response
-     */
-    public function getContent($item = null) {
-        if($item != null) {
-            $item = $this->getItem($item);
-        }
-
-        $content = $this->getPreviewContent($item)->render();
-
-        // if we are doing a quick preview of just the content
-        if(Input::has('content') || $item == null) {
-            return view(Preferences::get('appearance.pages::contentView'))->with('content', $content);
-        }
-
+    protected function decorateContent($content, $item) {
         return view(Preferences::get('appearance.pages::theme'), [
             'page' => $item,
             'title' => $item->getTitle(),
@@ -81,6 +63,10 @@ class PagesController extends VersionableCrudController {
             'tags' => $item->getTags(),
             'meta' => $item->getMeta()
         ]);
+    }
+
+    protected function decoratePreviewContent($content) {
+        return view(Preferences::get('appearance.pages::contentView'))->with('content', $content);
     }
 
     /**
