@@ -117,6 +117,9 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
                 'name',
                 'max:255'
             ],
+            'content' => [
+                'blade_template'
+            ],
             'stage' => [
                 'in:0,1,2,3'
             ]

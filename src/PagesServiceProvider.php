@@ -10,12 +10,6 @@ use Oxygen\Data\BaseServiceProvider;
 use Oxygen\Data\Cache\CacheSettingsRepositoryInterface;
 use Oxygen\Preferences\PreferenceNotFoundException;
 use Oxygen\Preferences\PreferencesManager;
-use OxygenModule\Pages\Cache\CacheInterface;
-use OxygenModule\Pages\Cache\CacheInvalidationInterface;
-use OxygenModule\Pages\Cache\CacheMiddleware;
-use OxygenModule\Pages\Cache\FileCache;
-use OxygenModule\Pages\Cache\PageCacheInvalidation;
-use OxygenModule\Pages\Cache\PageCacheSubscriber;
 use OxygenModule\Pages\Entity\Page;
 use OxygenModule\Pages\Repository\DoctrinePageRepository;
 use OxygenModule\Pages\Repository\DoctrinePartialRepository;
@@ -53,29 +47,21 @@ class PagesServiceProvider extends BaseServiceProvider {
 
         // Extends Blade compiler
         $this->app['blade.compiler']->directive('partial', function($expression) {
-            return '<?php $__item = app(\'' . PartialRepositoryInterface::class . '\')->findByKey' . $expression . ';
-            if(method_exists($__env, \'viewDependsOnEntity\')) {
-                $__env->viewDependsOnEntity($__item);
-            }
-            echo $__env->model($__item, \'content\')->render(); ?>';
-        });
-
-        try {
-            $this->app['router']->middleware('oxygen.cache', CacheMiddleware::class);
-            if($this->app[PreferencesManager::class]->get('modules.pages::cache.enabled') === true) {
-                $this->extendEntityManager(function($entities) {
-                    $entities->getEventManager()
-                             ->addEventSubscriber(app(PageCacheSubscriber::class));
-                });
-            }
-        } catch(\Exception $e) {
-            // we don't cache
-        }
-
-        $this->app['events']->listen('oxygen.entity.cache.invalidated', function($entity) {
-            if($entity instanceof Page && $entity->isPublished()) {
-                $this->app[CacheInterface::class]->clear($entity->getSlug());
-            }
+            $template = '<?php
+                try {
+                    $__item = app(\'' . PartialRepositoryInterface::class . '\')->findByKey' . $expression . ';
+                    if(method_exists($__env, \'viewDependsOnEntity\')) {
+                        $__env->viewDependsOnEntity($__item);
+                    }
+                    echo $__env->model($__item, \'content\')->render();
+                } catch (\Oxygen\Data\Exception\NoResultException $e) {
+                    throw new \Exception("Partial ' . str_replace(['(', ')'], '', $expression) . ' was not found", $e->getCode(), $e);
+                } catch (\Exception $e) {
+                    throw new \Exception($e->getMessage(), $e->getCode(), $e);
+                }
+            ?>';
+            // remove linebreaks from the template, because we want a 1:1 mapping for line numbers
+            return str_replace(["\r", "\n"], '', $template);
         });
     }
 
@@ -88,15 +74,6 @@ class PagesServiceProvider extends BaseServiceProvider {
         $this->loadEntitiesFrom(__DIR__ . '/Entity');
         $this->app->bind(PageRepositoryInterface::class, DoctrinePageRepository::class);
         $this->app->bind(PartialRepositoryInterface::class, DoctrinePartialRepository::class);
-
-        // Page Caching
-        $this->app->bind(CacheInterface::class, FileCache::class);
-        $this->app->singleton(FileCache::class, function($app) {
-            return new FileCache(base_path() . '/' . $app[PreferencesManager::class]->get('modules.pages::cache.location'), $app['files']);
-        });
-        $this->app->singleton(PageCacheSubscriber::class, function($app) {
-            return new PageCacheSubscriber($app['view.engine.resolver'], $app['view.finder'], $app['events'], $app[CacheSettingsRepositoryInterface::class]);
-        });
     }
 
     /**

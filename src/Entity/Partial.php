@@ -98,6 +98,9 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
                 'name',
                 'max:255'
             ],
+            'content' => [
+                'blade_template'
+            ],
             'stage' => [
                 'in:0,1'
             ]

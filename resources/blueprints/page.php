@@ -42,7 +42,6 @@ Blueprint::make('Page', function($blueprint) {
             'customRouteCallback' => function(Action $action, $route) {
                 $route->where('slug', '([a-z0-9/\-]+)');
             },
-            'middleware' => 'oxygen.cache'
         ],
         new ActionFactory()
     );
