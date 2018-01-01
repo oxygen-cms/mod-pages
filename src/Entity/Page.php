@@ -15,6 +15,7 @@ use Oxygen\Data\Behaviour\Timestamps;
 use Oxygen\Data\Behaviour\SoftDeletes;
 use Oxygen\Data\Behaviour\Versions;
 use Oxygen\Data\Validation\Validatable;
+use Oxygen\Data\Behaviour\Searchable;
 
 /**
  * @ORM\Entity
@@ -22,7 +23,7 @@ use Oxygen\Data\Validation\Validatable;
  * @ORM\HasLifecycleCallbacks
  */
 
-class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface {
+class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable {
 
     use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator {
         Publishes::__clone insteadof PrimaryKey;
@@ -154,6 +155,15 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
     public function setOptions($options) {
         $this->options = is_string($options) ? $options : json_encode($options, JSON_PRETTY_PRINT);
         return $this;
+    }
+
+    /**
+     * Returns the fields that should be searched.
+     *
+     * @return array
+     */
+    public static function getSearchableFields() {
+        return ['slug', 'title'];
     }
 
 }

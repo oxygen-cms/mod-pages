@@ -9,6 +9,7 @@ use Oxygen\Crud\BlueprintTrait\PublishableCrudTrait;
 use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
 use Oxygen\Pages\Entity\Page;
 use OxygenModule\Pages\Controller\PagesController;
+use Oxygen\Crud\BlueprintTrait\SearchableCrudTrait;
 
 Blueprint::make('Page', function($blueprint) {
     $blueprint->setController(PagesController::class);
@@ -16,7 +17,7 @@ Blueprint::make('Page', function($blueprint) {
 
     $blueprint->setToolbarOrders([
         'section' => [
-            'getCreate', 'getTrash'
+            'getList.search', 'getCreate', 'getTrash'
         ],
         'item' => [
             'getPreview',
@@ -60,5 +61,6 @@ Blueprint::make('Page', function($blueprint) {
     $blueprint->useTrait(new PreviewableCrudTrait());
     $blueprint->useTrait(new VersionableCrudTrait());
     $blueprint->useTrait(new PublishableCrudTrait());
+    $blueprint->useTrait(new SearchableCrudTrait());
 
 });

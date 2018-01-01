@@ -15,6 +15,7 @@ use Oxygen\Data\Behaviour\Timestamps;
 use Oxygen\Data\Behaviour\SoftDeletes;
 use Oxygen\Data\Behaviour\Versions;
 use Oxygen\Data\Validation\Validatable;
+use Oxygen\Data\Behaviour\Searchable;
 
 /**
  * @ORM\Entity
@@ -22,7 +23,7 @@ use Oxygen\Data\Validation\Validatable;
  * @ORM\HasLifecycleCallbacks
  */
 
-class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface {
+class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable {
 
     use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator {
         Publishes::__clone insteadof PrimaryKey;
@@ -115,6 +116,15 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
 
     protected function getFillableFields() {
         return ['key', 'title', 'author', 'content', 'stage'];
+    }
+
+    /**
+     * Returns the fields that should be searched.
+     *
+     * @return array
+     */
+    public static function getSearchableFields() {
+        return ['key', 'title'];
     }
 
 }
