@@ -1,9 +1,10 @@
 <?php
 
-    use Oxygen\Preferences\Loader\Database\PreferenceRepositoryInterface;
-    use Oxygen\Preferences\Loader\DatabaseLoader;
+use Oxygen\Preferences\Loader\Database\PreferenceRepositoryInterface;
+use Oxygen\Preferences\Loader\DatabaseLoader;
+use Oxygen\Preferences\Facades\Preferences;
 
-    Preferences::register('modules.pages', function($schema) {
+Preferences::register('modules.pages', function(\Oxygen\Preferences\Schema $schema) {
     $schema->setTitle('Pages');
     $schema->setLoader(new DatabaseLoader(app(PreferenceRepositoryInterface::class), 'modules.pages'));
 

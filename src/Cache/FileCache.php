@@ -6,6 +6,14 @@ use Carbon\Carbon;
 use Illuminate\Filesystem\Filesystem;
 
 class FileCache implements CacheInterface {
+    /**
+     * @var string
+     */
+    private $location;
+    /**
+     * @var Filesystem
+     */
+    private $files;
 
     /**
      * Constructs the FileCache

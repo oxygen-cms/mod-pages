@@ -8,7 +8,7 @@ use Oxygen\Crud\Controller\Publishable;
 use Oxygen\Crud\Controller\VersionableCrudController;
 use OxygenModule\Pages\Repository\PartialRepositoryInterface;
 use OxygenModule\Pages\Fields\PartialFieldSet;
-use Preferences;
+use Oxygen\Preferences\Facades\Preferences;
 
 class PartialsController extends VersionableCrudController {
 
@@ -19,7 +19,8 @@ class PartialsController extends VersionableCrudController {
      * Constructs the PagesController.
      *
      * @param PartialRepositoryInterface $repository
-     * @param BlueprintManager        $manager
+     * @param BlueprintManager $manager
+     * @throws \Oxygen\Core\Blueprint\BlueprintNotFoundException
      */
     public function __construct(PartialRepositoryInterface $repository, BlueprintManager $manager, PartialFieldSet $fields) {
         parent::__construct($repository, $manager->get('Partial'), $fields);

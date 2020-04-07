@@ -3,8 +3,6 @@
 
 namespace OxygenModule\Pages\Fields;
 
-use Lang;
-
 use Oxygen\Core\Form\ContentFieldName;
 use Oxygen\Core\Form\FieldSet;
 use OxygenModule\Pages\Entity\Page;
@@ -25,7 +23,7 @@ class PageFieldSet extends FieldSet implements ContentFieldName {
             [
                 'name'              => 'slug',
                 'editable'          => true,
-                'description'       => Lang::get('oxygen/mod-pages::descriptions.page.slug')
+                'description'       => __('oxygen/mod-pages::descriptions.page.slug')
             ],
             [
                 'name'              => 'title',
@@ -95,7 +93,7 @@ class PageFieldSet extends FieldSet implements ContentFieldName {
                     'blueprint'  => 'Page',
                     'allowNull' => true,
                     'items' => function() {
-                        $repo = App::make('Oxygen\Pages\Repository\PageRepositoryInterface');
+                        $repo = resolve('Oxygen\Pages\Repository\PageRepositoryInterface');
                         return $repo->columns(['id', 'title']);
                     }
                 ]

@@ -7,11 +7,11 @@ use Oxygen\Core\Html\Toolbar\ActionToolbarItem;
 use Oxygen\Crud\BlueprintTrait\PreviewableCrudTrait;
 use Oxygen\Crud\BlueprintTrait\PublishableCrudTrait;
 use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
-use Oxygen\Pages\Entity\Page;
 use OxygenModule\Pages\Controller\PagesController;
+use Oxygen\Core\Support\Facades\Blueprint;
 use Oxygen\Crud\BlueprintTrait\SearchableCrudTrait;
 
-Blueprint::make('Page', function($blueprint) {
+Blueprint::make('Page', function(\Oxygen\Core\Blueprint\Blueprint $blueprint) {
     $blueprint->setController(PagesController::class);
     $blueprint->setIcon('file-o');
 
