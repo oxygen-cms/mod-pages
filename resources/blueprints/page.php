@@ -49,7 +49,7 @@ Blueprint::make('Page', function(\Oxygen\Core\Blueprint\Blueprint $blueprint) {
     $blueprint->makeToolbarItem([
         'action'        => 'getView',
         'label'         => 'View on actual site',
-        'icon'          => 'file-o',
+        'icon'          => 'file-alt',
         'shouldRenderCallback' => function(ActionToolbarItem $item, array $arguments) {
             return
                 $item->shouldRenderBasic($arguments) &&

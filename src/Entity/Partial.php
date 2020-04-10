@@ -11,6 +11,7 @@ use Oxygen\Data\Behaviour\Fillable;
 use Oxygen\Data\Behaviour\PrimaryKey;
 use Oxygen\Data\Behaviour\PrimaryKeyInterface;
 use Oxygen\Data\Behaviour\Publishes;
+use Oxygen\Data\Behaviour\StatusIconInterface;
 use Oxygen\Data\Behaviour\Timestamps;
 use Oxygen\Data\Behaviour\SoftDeletes;
 use Oxygen\Data\Behaviour\Versions;
@@ -23,7 +24,7 @@ use Oxygen\Data\Behaviour\Searchable;
  * @ORM\HasLifecycleCallbacks
  */
 
-class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable {
+class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface {
 
     use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator {
         Publishes::__clone insteadof PrimaryKey;
@@ -127,4 +128,16 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
         return ['key', 'title'];
     }
 
+    /**
+     * Retrieves the status icon for the model.
+     *
+     * @return string
+     */
+    public function getStatusIcon() {
+        if($this->stage == self::STAGE_DRAFT) {
+            return 'pencil-square';
+        } else {
+            return 'globe-asia';
+        }
+    }
 }

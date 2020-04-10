@@ -67,13 +67,13 @@ class PagesController extends VersionableCrudController {
     /**
      * Updates an entity.
      *
-     * @param mixed $item the item
      * @param Request $request
+     * @param mixed $item the item
      * @return \Illuminate\Http\Response
      */
-    public function putUpdate($item, Request $request) {
+    public function putUpdate(Request $request, $item) {
         try {
-            return parent::putUpdate($item, $request);
+            return parent::putUpdate($request, $item);
         } catch(ViewExecutionException $e) {
             logger()->error($e);
             logger()->error($e->getPrevious());

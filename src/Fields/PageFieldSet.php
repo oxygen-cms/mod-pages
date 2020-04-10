@@ -21,13 +21,22 @@ class PageFieldSet extends FieldSet implements ContentFieldName {
                 'label'             => 'ID'
             ],
             [
-                'name'              => 'slug',
+                'name'              => 'content',
+                'type'              => 'editor',
                 'editable'          => true,
-                'description'       => __('oxygen/mod-pages::descriptions.page.slug')
+                'options'           => [
+                    'language'      => 'php',
+                    'fullWidth'     => true
+                ]
             ],
             [
                 'name'              => 'title',
                 'editable'          => true
+            ],
+            [
+                'name'              => 'slug',
+                'editable'          => true,
+                'description'       => __('oxygen/mod-pages::descriptions.page.slug')
             ],
             [
                 'name'              => 'author',
@@ -52,14 +61,6 @@ class PageFieldSet extends FieldSet implements ContentFieldName {
                 'options'           => [
                     'language'      => 'html',
                     'mode'          => 'code'
-                ]
-            ],
-            [
-                'name'              => 'content',
-                'type'              => 'editor',
-                'editable'          => true,
-                'options'           => [
-                    'language'      => 'php'
                 ]
             ],
             [

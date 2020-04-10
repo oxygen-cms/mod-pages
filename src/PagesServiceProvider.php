@@ -19,14 +19,6 @@ use OxygenModule\Pages\Repository\PartialRepositoryInterface;
 class PagesServiceProvider extends BaseServiceProvider {
 
     /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-
-    protected $defer = false;
-
-    /**
      * Bootstrap the application events.
      *
      * @return void
@@ -49,13 +41,13 @@ class PagesServiceProvider extends BaseServiceProvider {
         $this->app['blade.compiler']->directive('partial', function($expression) {
             $template = '<?php
                 try {
-                    $__item = app(\'' . PartialRepositoryInterface::class . '\')->findByKey' . $expression . ';
+                    $__item = app(\'' . PartialRepositoryInterface::class . '\')->findByKey(' . $expression . ');
                     if(method_exists($__env, \'viewDependsOnEntity\')) {
                         $__env->viewDependsOnEntity($__item);
                     }
                     echo $__env->model($__item, \'content\')->render();
                 } catch (\Oxygen\Data\Exception\NoResultException $e) {
-                    throw new \Exception("Partial ' . str_replace(['(', ')'], '', $expression) . ' was not found", $e->getCode(), $e);
+                    throw new \Exception("Partial ' . $expression . ' was not found", $e->getCode(), $e);
                 } catch (\Exception $e) {
                     throw new \Exception($e->getMessage(), $e->getCode(), $e);
                 }
@@ -74,15 +66,6 @@ class PagesServiceProvider extends BaseServiceProvider {
         $this->loadEntitiesFrom(__DIR__ . '/Entity');
         $this->app->bind(PageRepositoryInterface::class, DoctrinePageRepository::class);
         $this->app->bind(PartialRepositoryInterface::class, DoctrinePartialRepository::class);
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides() {
-        return [];
     }
 
 }

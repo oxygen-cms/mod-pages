@@ -26,6 +26,10 @@ class PartialsController extends VersionableCrudController {
         parent::__construct($repository, $manager->get('Partial'), $fields);
     }
 
+    /**
+     * @param $content
+     * @return \Illuminate\View\View
+     */
     protected function decoratePreviewContent($content) {
         return view(Preferences::get('appearance.pages::contentView'))->with('content', $content);
     }

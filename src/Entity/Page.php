@@ -11,6 +11,7 @@ use Oxygen\Data\Behaviour\Fillable;
 use Oxygen\Data\Behaviour\PrimaryKey;
 use Oxygen\Data\Behaviour\PrimaryKeyInterface;
 use Oxygen\Data\Behaviour\Publishes;
+use Oxygen\Data\Behaviour\StatusIconInterface;
 use Oxygen\Data\Behaviour\Timestamps;
 use Oxygen\Data\Behaviour\SoftDeletes;
 use Oxygen\Data\Behaviour\Versions;
@@ -23,7 +24,7 @@ use Oxygen\Data\Behaviour\Searchable;
  * @ORM\HasLifecycleCallbacks
  */
 
-class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable {
+class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface {
 
     use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator {
         Publishes::__clone insteadof PrimaryKey;
@@ -154,7 +155,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      */
     public function setOptions($options) {
         $this->options = is_string($options) ? $options : json_encode($options, JSON_PRETTY_PRINT);
-        return $this;
+        return  $this;
     }
 
     /**
@@ -163,7 +164,24 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      * @return array
      */
     public static function getSearchableFields() {
-        return ['slug', 'title'];
+        return ['slug', 'title', 'content'];
+    }
+
+    /**
+     * Retrieves the status icon for the model.
+     *
+     * @return string
+     */
+    public function getStatusIcon() {
+        if($this->stage == self::STAGE_ARCHIVED) {
+            return 'archive';
+        } else if($this->stage == self::STAGE_DRAFT) {
+            return 'pencil-square';
+        } else if($this->stage == self::STAGE_PENDING_REVIEW) {
+            return 'user-edit';
+        } else if($this->stage == self::STAGE_PUBLISHED) {
+            return 'globe-asia';
+        }
     }
 
 }
