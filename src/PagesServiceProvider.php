@@ -2,18 +2,14 @@
 
 namespace OxygenModule\Pages;
 
-use Carbon\Carbon;
-use Doctrine\ORM\EntityManager;
 use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Core\Database\AutomaticMigrator;
 use Oxygen\Data\BaseServiceProvider;
-use Oxygen\Data\Cache\CacheSettingsRepositoryInterface;
-use Oxygen\Preferences\PreferenceNotFoundException;
 use Oxygen\Preferences\PreferencesManager;
-use OxygenModule\Pages\Entity\Page;
 use OxygenModule\Pages\Repository\DoctrinePageRepository;
 use OxygenModule\Pages\Repository\DoctrinePartialRepository;
 use OxygenModule\Pages\Repository\PageRepositoryInterface;
+use OxygenModule\Pages\Repository\PersonRepositoryInterface;
 use OxygenModule\Pages\Repository\PartialRepositoryInterface;
 
 class PagesServiceProvider extends BaseServiceProvider {

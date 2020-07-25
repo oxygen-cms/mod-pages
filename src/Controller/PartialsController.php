@@ -6,8 +6,8 @@ use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Crud\Controller\Previewable;
 use Oxygen\Crud\Controller\Publishable;
 use Oxygen\Crud\Controller\VersionableCrudController;
-use OxygenModule\Pages\Repository\PartialRepositoryInterface;
 use OxygenModule\Pages\Fields\PartialFieldSet;
+use OxygenModule\Pages\Repository\PartialRepositoryInterface;
 use Oxygen\Preferences\Facades\Preferences;
 
 class PartialsController extends VersionableCrudController {
