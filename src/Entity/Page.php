@@ -4,6 +4,7 @@ namespace OxygenModule\Pages\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping AS ORM;
+use Oxygen\Core\Templating\Templatable;
 use Oxygen\Data\Behaviour\Accessors;
 use Oxygen\Data\Behaviour\CacheInvalidator;
 use Oxygen\Data\Behaviour\CacheInvalidatorInterface;
@@ -24,7 +25,7 @@ use Oxygen\Data\Behaviour\Searchable;
  * @ORM\HasLifecycleCallbacks
  */
 
-class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface {
+class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface, Templatable {
 
     use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator {
         Publishes::__clone insteadof PrimaryKey;
@@ -120,7 +121,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
                 'max:255'
             ],
             'content' => [
-                'blade_template'
+                'twig_template'
             ],
             'stage' => [
                 'in:0,1,2,3'
@@ -184,4 +185,24 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
         }
     }
 
+    /**
+     * @return string
+     */
+    public function getResourceType() {
+        return 'pages';
+    }
+
+    /**
+     * @return string
+     */
+    public function getResourceKey() {
+        return $this->slug;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplateCode() {
+        return $this->content;
+    }
 }

@@ -3,6 +3,7 @@
 namespace OxygenModule\Pages\Repository;
 
 use Doctrine\ORM\NoResultException as DoctrineNoResultException;
+use Oxygen\Core\Templating\Templatable;
 use Oxygen\Data\Exception\NoResultException;
 use Oxygen\Data\Repository\Doctrine\Publishes;
 use Oxygen\Data\Repository\Doctrine\Repository;
@@ -38,7 +39,7 @@ class DoctrinePartialRepository extends Repository implements PartialRepositoryI
                  ->andWhere('o.key = :key')
                  ->setParameter('stage', Partial::STAGE_PUBLISHED)
                  ->setParameter('key', $key),
-            new QueryParameters(['excludeTrashed'])
+            new QueryParameters(['excludeTrashed', 'excludeVersions'])
         );
 
         try {
@@ -48,4 +49,15 @@ class DoctrinePartialRepository extends Repository implements PartialRepositoryI
         }
     }
 
+    /**
+     * @param string $key
+     * @return Templatable|null
+     */
+    public function findByTemplateKey($key) {
+        try {
+            return $this->findByKey($key);
+        } catch(NoResultException $e) {
+            return null;
+        }
+    }
 }

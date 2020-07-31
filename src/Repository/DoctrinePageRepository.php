@@ -3,6 +3,7 @@
 namespace OxygenModule\Pages\Repository;
 
 use \Doctrine\ORM\NoResultException as DoctrineNoResultException;
+use Oxygen\Core\Templating\Templatable;
 use Oxygen\Data\Exception\NoResultException;
 use Oxygen\Data\Repository\Doctrine\Publishes;
 use Oxygen\Data\Repository\Doctrine\Repository;
@@ -49,4 +50,15 @@ class DoctrinePageRepository extends Repository implements PageRepositoryInterfa
         }
     }
 
+    /**
+     * @param string $key
+     * @return Templatable|null
+     */
+    public function findByTemplateKey($key) {
+        try {
+            return $this->findBySlug($key);
+        } catch(NoResultException $e) {
+            return null;
+        }
+    }
 }

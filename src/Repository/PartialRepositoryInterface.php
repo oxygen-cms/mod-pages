@@ -2,11 +2,12 @@
 
 namespace OxygenModule\Pages\Repository;
 
+use Oxygen\Core\Templating\TemplatableRepositoryInterface;
 use Oxygen\Data\Exception\NoResultException;
 use Oxygen\Data\Repository\RepositoryInterface;
 use OxygenModule\Pages\Entity\Partial;
 
-interface PartialRepositoryInterface extends RepositoryInterface {
+interface PartialRepositoryInterface extends RepositoryInterface, TemplatableRepositoryInterface {
 
     /**
      * Finds a Partial based upon the key.

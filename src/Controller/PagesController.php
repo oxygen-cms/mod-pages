@@ -5,6 +5,7 @@ namespace OxygenModule\Pages\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Oxygen\Core\Http\Notification;
+use Oxygen\Core\Templating\TwigTemplateCompiler;
 use Oxygen\Crud\Controller\Previewable;
 use Oxygen\Preferences\Facades\Preferences;
 use Oxygen\Crud\Controller\Publishable;
@@ -36,13 +37,14 @@ class PagesController extends VersionableCrudController {
     /**
      * View a page with a theme.
      *
-     * @param string                                 $slug the URI slug
+     * @param string $slug the URI slug
+     * @param TwigTemplateCompiler $templating
      * @return View
      */
-    public function getView($slug = '/') {
+    public function getView(TwigTemplateCompiler $templating, $slug = '/') {
         try {
             $page = $this->repository->findBySlug($slug);
-            return $this->getContent($page);
+            return $this->getContent($page, $templating);
         } catch(NoResultException $e) {
             abort(404, "Slug not found");
         }

@@ -34,7 +34,7 @@ Blueprint::make('Page', function(\Oxygen\Core\Blueprint\Blueprint $blueprint) {
             'name'          => 'getView',
             'pattern'       => '{slug?}',
             'group'         => new Group('pages'),
-            'register'      => 'atEnd',
+            'register'      => Action::REGISTER_AT_END,
             'routeParametersCallback' => function(Action $action, array $options) {
                 return [
                     $options['model']->getSlug()

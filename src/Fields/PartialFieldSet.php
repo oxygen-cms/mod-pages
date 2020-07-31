@@ -37,7 +37,7 @@ class PartialFieldSet extends FieldSet implements ContentFieldName {
                 'type'              => 'editor',
                 'editable'          => true,
                 'options'           => [
-                    'language'      => 'php'
+                    'language'      => 'twig'
                 ]
             ],
             [

@@ -2,10 +2,11 @@
 
 namespace OxygenModule\Pages\Repository;
 
+use Oxygen\Core\Templating\TemplatableRepositoryInterface;
 use Oxygen\Data\Repository\RepositoryInterface;
 use OxygenModule\Pages\Entity\Page;
 
-interface PageRepositoryInterface extends RepositoryInterface {
+interface PageRepositoryInterface extends RepositoryInterface, TemplatableRepositoryInterface {
 
     /**
      * Finds a Page based upon the slug.

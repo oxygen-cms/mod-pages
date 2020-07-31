@@ -4,8 +4,11 @@ namespace OxygenModule\Pages;
 
 use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Core\Database\AutomaticMigrator;
+use Oxygen\Core\Templating\DoctrineResourceLoader;
+use Oxygen\Core\Templating\TwigTemplateCompiler;
 use Oxygen\Data\BaseServiceProvider;
 use Oxygen\Preferences\PreferencesManager;
+use OxygenModule\Media\Presenter\HtmlPresenter;
 use OxygenModule\Pages\Repository\DoctrinePageRepository;
 use OxygenModule\Pages\Repository\DoctrinePartialRepository;
 use OxygenModule\Pages\Repository\PageRepositoryInterface;
@@ -38,18 +41,19 @@ class PagesServiceProvider extends BaseServiceProvider {
             $template = '<?php
                 try {
                     $__item = app(\'' . PartialRepositoryInterface::class . '\')->findByKey(' . $expression . ');
-                    if(method_exists($__env, \'viewDependsOnEntity\')) {
-                        $__env->viewDependsOnEntity($__item);
-                    }
-                    echo $__env->model($__item, \'content\')->render();
-                } catch (\Oxygen\Data\Exception\NoResultException $e) {
-                    throw new \Exception("Partial ' . $expression . ' was not found", $e->getCode(), $e);
-                } catch (\Exception $e) {
-                    throw new \Exception($e->getMessage(), $e->getCode(), $e);
-                }
+                    echo app(\Oxygen\Core\Templating\TwigTemplateCompiler::class)->render($__item);
+                } catch(\Oxygen\Data\Exception\NoResultException $e) {
+                    echo "partial not found";
+                } 
             ?>';
+
             // remove linebreaks from the template, because we want a 1:1 mapping for line numbers
             return str_replace(["\r", "\n"], '', $template);
+        });
+        
+        $this->app->resolving(TwigTemplateCompiler::class, function(TwigTemplateCompiler $c, $app) {
+            $c->getLoader()->addResourceType('pages', new DoctrineResourceLoader($app, PageRepositoryInterface::class));
+            $c->getLoader()->addResourceType('partials', new DoctrineResourceLoader($app, PartialRepositoryInterface::class));
         });
     }
 

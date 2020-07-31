@@ -4,6 +4,7 @@ namespace OxygenModule\Pages\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping AS ORM;
+use Oxygen\Core\Templating\Templatable;
 use Oxygen\Data\Behaviour\Accessors;
 use Oxygen\Data\Behaviour\CacheInvalidator;
 use Oxygen\Data\Behaviour\CacheInvalidatorInterface;
@@ -24,7 +25,7 @@ use Oxygen\Data\Behaviour\Searchable;
  * @ORM\HasLifecycleCallbacks
  */
 
-class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface {
+class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface, Templatable {
 
     use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator {
         Publishes::__clone insteadof PrimaryKey;
@@ -101,7 +102,7 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
                 'max:255'
             ],
             'content' => [
-                'blade_template'
+                'twig_template'
             ],
             'stage' => [
                 'in:0,1'
@@ -139,5 +140,26 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
         } else {
             return 'globe-asia';
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getResourceType() {
+        return 'partials';
+    }
+
+    /**
+     * @return string
+     */
+    public function getResourceKey() {
+        return $this->key;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplateCode() {
+        return $this->content;
     }
 }
