@@ -35,6 +35,7 @@ class PageFieldSet extends FieldSet implements ContentFieldName {
             ],
             [
                 'name'              => 'slug',
+                'label'             => 'URL',
                 'editable'          => true,
                 'description'       => __('oxygen/mod-pages::descriptions.page.slug')
             ],
@@ -51,12 +52,14 @@ class PageFieldSet extends FieldSet implements ContentFieldName {
             [
                 'name'              => 'tags',
                 'type'              => 'textarea',
+                'description'       => __('oxygen/mod-pages::descriptions.page.tags'),
                 'editable'          => true,
                 'attributes'        => [ 'rows' => 2 ]
             ],
             [
                 'name'              => 'meta',
                 'type'              => 'editor-mini',
+                'description'       => __('oxygen/mod-pages::descriptions.page.meta'),
                 'editable'          => true,
                 'options'           => [
                     'language'      => 'html',
