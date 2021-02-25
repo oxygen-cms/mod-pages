@@ -182,6 +182,8 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
             return 'user-edit';
         } else if($this->stage == self::STAGE_PUBLISHED) {
             return 'globe-asia';
+        } else {
+            return null;
         }
     }
 

@@ -6,7 +6,6 @@ use DateTime;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Exception;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -22,26 +21,26 @@ class PageCacheSubscriber implements EventSubscriber {
     protected $cacheSettings;
 
     /**
-     * @var \Illuminate\View\Engines\EngineResolver
+     * @var EngineResolver
      */
     private $resolver;
 
     /**
-     * @var \Illuminate\View\ViewFinderInterface
+     * @var ViewFinderInterface
      */
     private $finder;
 
     /**
-     * @var \Illuminate\Contracts\Events\Dispatcher
+     * @var Dispatcher
      */
     private $events;
 
     /**
      * Constructs the CacheInvalidationSubscriber.
      *
-     * @param \Illuminate\View\Engines\EngineResolver $resolver
-     * @param \Illuminate\View\ViewFinderInterface    $finder
-     * @param \Illuminate\Contracts\Events\Dispatcher $events
+     * @param EngineResolver $resolver
+     * @param ViewFinderInterface $finder
+     * @param Dispatcher $events
      */
     public function __construct(EngineResolver $resolver, ViewFinderInterface $finder, Dispatcher $events, CacheSettingsRepositoryInterface $cacheSettings) {
         $this->resolver = $resolver;
@@ -151,11 +150,11 @@ class PageCacheSubscriber implements EventSubscriber {
     }
 
     /**
-     * @param \OxygenModule\Pages\Entity\Page       $page
+     * @param Page $page
      * @param string                                $content
      * @param DateTime                              $modified
-     * @param \OxygenModule\Pages\Cache\ViewFactory $factory
-     * @throws \OxygenModule\Pages\Cache\ViewExecutionException
+     * @param ViewFactory $factory
+     * @throws ViewExecutionException
      */
     protected function compileViewContent(Page $page, $content, $modified, ViewFactory $factory) {
         $path = $factory->pathFromModel(get_class($page), $page->getId(), 'content');

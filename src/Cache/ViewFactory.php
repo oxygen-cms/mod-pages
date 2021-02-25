@@ -3,7 +3,7 @@
 
 namespace OxygenModule\Pages\Cache;
 
-use Oxygen\Core\View\Factory;
+use Illuminate\View\Factory;
 use Oxygen\Data\Behaviour\CacheInvalidatorInterface;
 
 class ViewFactory extends Factory {
