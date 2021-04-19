@@ -9,12 +9,14 @@ use Oxygen\Data\Behaviour\Accessors;
 use Oxygen\Data\Behaviour\CacheInvalidator;
 use Oxygen\Data\Behaviour\CacheInvalidatorInterface;
 use Oxygen\Data\Behaviour\Fillable;
+use Oxygen\Data\Behaviour\HasUpdatedAt;
 use Oxygen\Data\Behaviour\PrimaryKey;
 use Oxygen\Data\Behaviour\PrimaryKeyInterface;
 use Oxygen\Data\Behaviour\Publishes;
 use Oxygen\Data\Behaviour\StatusIconInterface;
 use Oxygen\Data\Behaviour\Timestamps;
 use Oxygen\Data\Behaviour\SoftDeletes;
+use Oxygen\Data\Behaviour\Versionable;
 use Oxygen\Data\Behaviour\Versions;
 use Oxygen\Data\Validation\Validatable;
 use Oxygen\Data\Behaviour\Searchable;
@@ -25,7 +27,7 @@ use Oxygen\Data\Behaviour\Searchable;
  * @ORM\HasLifecycleCallbacks
  */
 
-class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface, Templatable {
+class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface, Templatable, Versionable, HasUpdatedAt {
 
     use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator {
         Publishes::__clone insteadof PrimaryKey;
@@ -38,39 +40,33 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
     /**
      * @ORM\Column(name="`key`", type="string")
      */
-
     protected $key;
 
     /**
      * @ORM\Column(type="string")
      */
-
     protected $title;
 
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-
     protected $author;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-
     protected $content;
 
     /**
      * @ORM\OneToMany(targetEntity="OxygenModule\Pages\Entity\Partial", mappedBy="headVersion", cascade={"persist", "remove", "merge"})
      * @ORM\OrderBy({ "updatedAt" = "DESC" })
      */
-
     private $versions;
 
     /**
      * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Partial",  inversedBy="versions")
      * @ORM\JoinColumn(name="head_version", referencedColumnName="id")
      */
-
     private $headVersion;
 
     /**
@@ -115,8 +111,7 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
      *
      * @return array
      */
-
-    protected function getFillableFields() {
+    public function getFillableFields(): array {
         return ['key', 'title', 'author', 'content', 'stage'];
     }
 
