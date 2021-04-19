@@ -7,14 +7,15 @@ use Oxygen\Core\Templating\Templatable;
 use Oxygen\Data\Exception\NoResultException;
 use Oxygen\Data\Repository\Doctrine\Publishes;
 use Oxygen\Data\Repository\Doctrine\Repository;
-use Oxygen\Data\Repository\Doctrine\SoftDeletes;
 use Oxygen\Data\Repository\Doctrine\Versions;
+use Oxygen\Data\Repository\ExcludeTrashedScope;
+use Oxygen\Data\Repository\ExcludeVersionsScope;
 use Oxygen\Data\Repository\QueryParameters;
 use OxygenModule\Pages\Entity\Partial;
 
 class DoctrinePartialRepository extends Repository implements PartialRepositoryInterface {
 
-    use SoftDeletes, Versions, Publishes {
+    use Versions, Publishes {
         Publishes::persist insteadof Versions;
     }
 
@@ -39,7 +40,7 @@ class DoctrinePartialRepository extends Repository implements PartialRepositoryI
                  ->andWhere('o.key = :key')
                  ->setParameter('stage', Partial::STAGE_PUBLISHED)
                  ->setParameter('key', $key),
-            new QueryParameters(['excludeTrashed', 'excludeVersions'])
+            new QueryParameters([new ExcludeTrashedScope(), new ExcludeVersionsScope()])
         );
 
         try {

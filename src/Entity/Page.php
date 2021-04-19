@@ -9,12 +9,14 @@ use Oxygen\Data\Behaviour\Accessors;
 use Oxygen\Data\Behaviour\CacheInvalidator;
 use Oxygen\Data\Behaviour\CacheInvalidatorInterface;
 use Oxygen\Data\Behaviour\Fillable;
+use Oxygen\Data\Behaviour\HasUpdatedAt;
 use Oxygen\Data\Behaviour\PrimaryKey;
 use Oxygen\Data\Behaviour\PrimaryKeyInterface;
 use Oxygen\Data\Behaviour\Publishes;
 use Oxygen\Data\Behaviour\StatusIconInterface;
 use Oxygen\Data\Behaviour\Timestamps;
 use Oxygen\Data\Behaviour\SoftDeletes;
+use Oxygen\Data\Behaviour\Versionable;
 use Oxygen\Data\Behaviour\Versions;
 use Oxygen\Data\Validation\Validatable;
 use Oxygen\Data\Behaviour\Searchable;
@@ -25,7 +27,7 @@ use Oxygen\Data\Behaviour\Searchable;
  * @ORM\HasLifecycleCallbacks
  */
 
-class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface, Templatable {
+class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface, Templatable, Versionable, HasUpdatedAt {
 
     use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator {
         Publishes::__clone insteadof PrimaryKey;
@@ -134,8 +136,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      *
      * @return array
      */
-
-    protected function getFillableFields() {
+    public function getFillableFields(): array {
         return ['slug', 'title', 'author', 'description', 'tags', 'meta', 'content', 'options', 'stage'];
     }
 
@@ -207,4 +208,5 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
     public function getTemplateCode() {
         return $this->content;
     }
+
 }

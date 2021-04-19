@@ -7,14 +7,14 @@ use Oxygen\Core\Templating\Templatable;
 use Oxygen\Data\Exception\NoResultException;
 use Oxygen\Data\Repository\Doctrine\Publishes;
 use Oxygen\Data\Repository\Doctrine\Repository;
-use Oxygen\Data\Repository\Doctrine\SoftDeletes;
 use Oxygen\Data\Repository\Doctrine\Versions;
+use Oxygen\Data\Repository\ExcludeTrashedScope;
 use Oxygen\Data\Repository\QueryParameters;
 use OxygenModule\Pages\Entity\Page;
 
 class DoctrinePageRepository extends Repository implements PageRepositoryInterface {
 
-    use SoftDeletes, Versions, Publishes {
+    use Versions, Publishes {
         Publishes::persist insteadof Versions;
     }
 
@@ -40,7 +40,7 @@ class DoctrinePageRepository extends Repository implements PageRepositoryInterfa
                  ->andWhere('o.slug = :slug')
                  ->setParameter('stage', Page::STAGE_PUBLISHED)
                  ->setParameter('slug', $slug),
-            new QueryParameters(['excludeTrashed'])
+            new QueryParameters([new ExcludeTrashedScope()])
         );
 
         try {

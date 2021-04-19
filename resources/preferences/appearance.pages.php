@@ -3,8 +3,9 @@
 use Oxygen\Preferences\Loader\Database\PreferenceRepositoryInterface;
 use Oxygen\Preferences\Loader\DatabaseLoader;
 use Oxygen\Preferences\Facades\Preferences;
+use Oxygen\Preferences\Schema;
 
-Preferences::register('appearance.pages', function(\Oxygen\Preferences\Schema $schema) {
+Preferences::register('appearance.pages', function(Schema $schema) {
     $schema->setTitle('Pages & Partials');
     $schema->setLoader(new DatabaseLoader(app(PreferenceRepositoryInterface::class), 'appearance.pages'));
 
@@ -13,14 +14,16 @@ Preferences::register('appearance.pages', function(\Oxygen\Preferences\Schema $s
             'Pages' => [
                 [
                     'name' => 'theme',
-                    'validationRules' => ['view_exists']
+                    'validationRules' => ['nullable', 'view_exists']
                 ],
                 [
                     'name' => 'contentView',
                     'label' => 'Standalone Content View',
-                    'validationRules' => ['view_exists']
+                    'validationRules' => ['nullable', 'view_exists']
                 ]
             ]
         ]
     ]);
 });
+
+

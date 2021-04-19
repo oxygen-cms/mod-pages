@@ -3,12 +3,10 @@
 namespace OxygenModule\Pages;
 
 use Oxygen\Core\Blueprint\BlueprintManager;
-use Oxygen\Core\Database\AutomaticMigrator;
 use Oxygen\Core\Templating\DoctrineResourceLoader;
 use Oxygen\Core\Templating\TwigTemplateCompiler;
 use Oxygen\Data\BaseServiceProvider;
 use Oxygen\Preferences\PreferencesManager;
-use OxygenModule\Media\Presenter\HtmlPresenter;
 use OxygenModule\Pages\Repository\DoctrinePageRepository;
 use OxygenModule\Pages\Repository\DoctrinePartialRepository;
 use OxygenModule\Pages\Repository\PageRepositoryInterface;
@@ -34,7 +32,7 @@ class PagesServiceProvider extends BaseServiceProvider {
         // Blueprints
         $this->app[BlueprintManager::class]->loadDirectory(__DIR__ . '/../resources/blueprints');
         $this->app[PreferencesManager::class]->loadDirectory(__DIR__ . '/../resources/preferences');
-        $this->app[AutomaticMigrator::class]->loadMigrationsFrom(__DIR__ . '/../migrations', 'oxygen/mod-pages');
+        $this->loadMigrationsFrom(__DIR__ . '/../migrations');
 
         // Extends Blade compiler
         $this->app['blade.compiler']->directive('partial', function($expression) {
@@ -50,7 +48,7 @@ class PagesServiceProvider extends BaseServiceProvider {
             // remove linebreaks from the template, because we want a 1:1 mapping for line numbers
             return str_replace(["\r", "\n"], '', $template);
         });
-        
+
         $this->app->resolving(TwigTemplateCompiler::class, function(TwigTemplateCompiler $c, $app) {
             $c->getLoader()->addResourceType('pages', new DoctrineResourceLoader($app, PageRepositoryInterface::class));
             $c->getLoader()->addResourceType('partials', new DoctrineResourceLoader($app, PartialRepositoryInterface::class));
