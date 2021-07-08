@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Oxygen\Preferences\Loader\Database\PreferenceRepositoryInterface;
+use Oxygen\Preferences\Loader\PreferenceRepositoryInterface;
 use Oxygen\Preferences\Repository;
 
 class AddContentViewPreference extends Migration {

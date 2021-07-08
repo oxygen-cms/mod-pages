@@ -8,6 +8,7 @@ use Oxygen\Core\Blueprint\BlueprintNotFoundException;
 use Oxygen\Crud\Controller\Previewable;
 use Oxygen\Crud\Controller\Publishable;
 use Oxygen\Crud\Controller\VersionableCrudController;
+use Oxygen\Preferences\PreferenceNotFoundException;
 use Oxygen\Preferences\PreferencesManager;
 use OxygenModule\Pages\Fields\PartialFieldSet;
 use OxygenModule\Pages\Repository\PartialRepositoryInterface;
@@ -27,6 +28,8 @@ class PartialsController extends VersionableCrudController {
      *
      * @param PartialRepositoryInterface $repository
      * @param BlueprintManager $manager
+     * @param PartialFieldSet $fields
+     * @param PreferencesManager $preferencesManager
      * @throws BlueprintNotFoundException
      */
     public function __construct(PartialRepositoryInterface $repository, BlueprintManager $manager, PartialFieldSet $fields, PreferencesManager $preferencesManager) {
@@ -37,6 +40,7 @@ class PartialsController extends VersionableCrudController {
     /**
      * @param string $content
      * @return View
+     * @throws PreferenceNotFoundException
      */
     protected function decoratePreviewContent($content) {
         return view($this->preferences->get('appearance.pages::contentView'))->with('content', $content);

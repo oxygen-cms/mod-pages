@@ -2,6 +2,7 @@
 
 namespace OxygenModule\Pages\Controller;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
@@ -12,10 +13,7 @@ use Oxygen\Crud\Controller\Previewable;
 use Oxygen\Crud\Controller\Publishable;
 use Oxygen\Preferences\PreferenceNotFoundException;
 use Oxygen\Preferences\PreferencesManager;
-use Oxygen\Preferences\ThemeSpecificPreferencesFallback;
 use Oxygen\Theme\ThemeManager;
-use Oxygen\Theme\ThemeNotFoundException;
-use OxygenModule\Pages\Cache\ViewExecutionException;
 use OxygenModule\Pages\Entity\Page;
 use OxygenModule\Pages\Fields\PageFieldSet;
 use Oxygen\Core\Blueprint\BlueprintManager;
@@ -37,9 +35,9 @@ class PagesController extends VersionableCrudController {
     private $preferences;
 
     /**
-     * @var ThemeSpecificPreferencesFallback
+     * @var ThemeManager
      */
-    private $themeFallback;
+    private $themeManager;
 
     /**
      * Constructs the PagesController.
@@ -47,12 +45,14 @@ class PagesController extends VersionableCrudController {
      * @param PageRepositoryInterface $repository
      * @param BlueprintManager $manager
      * @param PageFieldSet $fields
+     * @param PreferencesManager $preferencesManager
+     * @param ThemeManager $themeManager
      * @throws BlueprintNotFoundException
      */
-    public function __construct(PageRepositoryInterface $repository, BlueprintManager $manager, PageFieldSet $fields, PreferencesManager $preferencesManager, ThemeSpecificPreferencesFallback $themeFallback) {
+    public function __construct(PageRepositoryInterface $repository, BlueprintManager $manager, PageFieldSet $fields, PreferencesManager $preferencesManager, ThemeManager $themeManager) {
         parent::__construct($repository, $manager->get('Page'), $fields);
         $this->preferences = $preferencesManager;
-        $this->themeFallback = $themeFallback;
+        $this->themeManager = $themeManager;
     }
 
     /**
@@ -77,11 +77,9 @@ class PagesController extends VersionableCrudController {
      * @param mixed $item
      * @return View
      * @throws PreferenceNotFoundException
-     * @throws ThemeNotFoundException
      */
-    protected function decorateContent($content, $item) {
+    protected function decorateContent(string $content, Page $item) {
         $this->applyThemeOverrides($item);
-
         return view($this->preferences->get(self::PAGE_VIEW_KEY), [
             'page' => $item,
             'title' => $item->getTitle(),
@@ -121,7 +119,7 @@ class PagesController extends VersionableCrudController {
     public function putUpdate(Request $request, $item) {
         try {
             return parent::putUpdate($request, $item);
-        } catch(ViewExecutionException $e) {
+        } catch(Exception $e) {
             logger()->error($e);
             logger()->error($e->getPrevious());
             return notify(
@@ -133,11 +131,10 @@ class PagesController extends VersionableCrudController {
 
     /**
      * @param Page $page
-     * @throws ThemeNotFoundException
      */
     private function applyThemeOverrides(Page $page) {
         if(isset($page->getOptions()['customTheme'])) {
-            $this->themeFallback->temporarilyOverrideTheme($page->getOptions()['customTheme']);
+            $this->themeManager->temporarilyOverrideTheme($page->getOptions()['customTheme']);
         }
     }
 
