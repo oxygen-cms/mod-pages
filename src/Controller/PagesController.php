@@ -65,7 +65,7 @@ class PagesController extends VersionableCrudController {
     public function getView(TwigTemplateCompiler $templating, $slug = '/') {
         try {
             $page = $this->repository->findBySlug($slug);
-            return $this->getContent($page, $templating);
+            return $this->getContent($templating, null, true, $page);
         } catch(NoResultException $e) {
             abort(404, "Slug not found");
             return null;
@@ -107,26 +107,6 @@ class PagesController extends VersionableCrudController {
 //        }
 
         return view($this->preferences->get(self::CONTENT_VIEW_KEY))->with('content', $content);
-    }
-
-    /**
-     * Updates an entity.
-     *
-     * @param Request $request
-     * @param mixed $item the item
-     * @return Response
-     */
-    public function putUpdate(Request $request, $item) {
-        try {
-            return parent::putUpdate($request, $item);
-        } catch(Exception $e) {
-            logger()->error($e);
-            logger()->error($e->getPrevious());
-            return notify(
-                new Notification('PHP Error in Page Content', Notification::FAILED),
-                ['input' => true]
-            );
-        }
     }
 
     /**

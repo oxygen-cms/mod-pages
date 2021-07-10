@@ -16,9 +16,9 @@ Blueprint::make('Partial', function(\Oxygen\Core\Blueprint\Blueprint $blueprint)
             'getList.search', 'getCreate', 'getTrash'
         ],
         'item' => [
+            'postPublish',
             'getPreview',
-            'getUpdate,More' => ['getInfo', 'postPublish', 'deleteDelete', 'postRestore', 'deleteForce'],
-            'Version' => ['postMakeDraft', 'postNewVersion', 'postMakeHeadVersion']
+            'getUpdate,More' => ['getInfo', 'postNewVersion', 'postMakeHeadVersion', 'deleteDelete', 'postRestore', 'deleteForce'],
         ],
         'versionList' => [
             'deleteVersions'

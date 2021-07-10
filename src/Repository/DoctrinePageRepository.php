@@ -2,20 +2,22 @@
 
 namespace OxygenModule\Pages\Repository;
 
-use \Doctrine\ORM\NoResultException as DoctrineNoResultException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException as DoctrineNoResultException;
 use Oxygen\Core\Templating\Templatable;
 use Oxygen\Data\Exception\NoResultException;
 use Oxygen\Data\Repository\Doctrine\Publishes;
 use Oxygen\Data\Repository\Doctrine\Repository;
 use Oxygen\Data\Repository\Doctrine\Versions;
 use Oxygen\Data\Repository\ExcludeTrashedScope;
+use Oxygen\Data\Repository\ExcludeVersionsScope;
 use Oxygen\Data\Repository\QueryParameters;
 use OxygenModule\Pages\Entity\Page;
 
 class DoctrinePageRepository extends Repository implements PageRepositoryInterface {
 
     use Versions, Publishes {
-        Publishes::persist insteadof Versions;
+        Publishes::onEntityPersisted insteadof Versions;
     }
 
     /**
@@ -30,17 +32,24 @@ class DoctrinePageRepository extends Repository implements PageRepositoryInterfa
      * Finds a Page based upon the slug.
      *
      * @param string $slug
-     * @throws NoResultException
      * @return Page
+     *@throws NoResultException|NonUniqueResultException
      */
-    public function findBySlug($slug) {
+    public function findBySlug($slug, $onlyPublished = true) {
+        $qb = $this->createSelectQuery()
+            ->andWhere('o.slug = :slug')
+            ->setParameter('slug', $slug);
+        $clauses = [new ExcludeTrashedScope()];
+        if($onlyPublished) {
+            $qb->andWhere('o.stage = :stage')
+               ->setParameter('stage', Page::STAGE_PUBLISHED);
+        } else {
+            $clauses[] = new ExcludeVersionsScope();
+        }
+
         $q = $this->getQuery(
-            $this->createSelectQuery()
-                 ->andWhere('o.stage = :stage')
-                 ->andWhere('o.slug = :slug')
-                 ->setParameter('stage', Page::STAGE_PUBLISHED)
-                 ->setParameter('slug', $slug),
-            new QueryParameters([new ExcludeTrashedScope()])
+            $qb,
+            new QueryParameters($clauses)
         );
 
         try {
@@ -53,10 +62,11 @@ class DoctrinePageRepository extends Repository implements PageRepositoryInterfa
     /**
      * @param string $key
      * @return Templatable|null
+     * @throws NonUniqueResultException
      */
-    public function findByTemplateKey($key) {
+    public function findByTemplateKey($key, $onlyPublished = true) {
         try {
-            return $this->findBySlug($key);
+            return $this->findBySlug($key, $onlyPublished);
         } catch(NoResultException $e) {
             return null;
         }

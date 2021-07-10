@@ -12,6 +12,7 @@ use Oxygen\Data\Behaviour\Fillable;
 use Oxygen\Data\Behaviour\HasUpdatedAt;
 use Oxygen\Data\Behaviour\PrimaryKey;
 use Oxygen\Data\Behaviour\PrimaryKeyInterface;
+use Oxygen\Data\Behaviour\Publishable;
 use Oxygen\Data\Behaviour\Publishes;
 use Oxygen\Data\Behaviour\StatusIconInterface;
 use Oxygen\Data\Behaviour\Timestamps;
@@ -27,14 +28,11 @@ use Oxygen\Data\Behaviour\Searchable;
  * @ORM\HasLifecycleCallbacks
  */
 
-class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface, Templatable, Versionable, HasUpdatedAt {
+class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface, Templatable, Versionable, HasUpdatedAt, Publishable {
 
-    use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator {
-        Publishes::__clone insteadof PrimaryKey;
-    }
+    use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator;
     use Accessors, Fillable;
 
-    const STAGE_DRAFT = 0;
     const STAGE_PENDING_REVIEW = 1;
     const STAGE_PUBLISHED = 2;
     const STAGE_ARCHIVED = 3;
