@@ -20,6 +20,9 @@ use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Crud\Controller\VersionableCrudController;
 use Oxygen\Data\Exception\NoResultException;
 use OxygenModule\Pages\Repository\PageRepositoryInterface;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class PagesController extends VersionableCrudController {
 
@@ -58,9 +61,12 @@ class PagesController extends VersionableCrudController {
     /**
      * View a page with a theme.
      *
-     * @param string $slug the URI slug
      * @param TwigTemplateCompiler $templating
+     * @param string $slug the URI slug
      * @return View
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function getView(TwigTemplateCompiler $templating, $slug = '/') {
         try {
@@ -82,12 +88,12 @@ class PagesController extends VersionableCrudController {
         $this->applyThemeOverrides($item);
         return view($this->preferences->get(self::PAGE_VIEW_KEY), [
             'page' => $item,
-            'title' => $item->getTitle(),
+            'title' => $item !== null ? $item->getTitle() : null,
             'content' => $content,
-            'options' => $item->getOptions(),
-            'description' => $item->getDescription(),
-            'tags' => $item->getTags(),
-            'meta' => $item->getMeta()
+            'options' => $item !== null ? $item->getOptions() : [],
+            'description' => $item !== null ? $item->getDescription() : null,
+            'tags' => $item !== null ? $item->getTags() : null,
+            'meta' => $item !== null ? $item->getMeta() : null
         ]);
     }
 
@@ -96,23 +102,18 @@ class PagesController extends VersionableCrudController {
      * @return View
      * @throws PreferenceNotFoundException
      */
-    protected function decoratePreviewContent($content) {
-//        $this->applyThemeOverrides()
-//        $view =
-//        if(isset($item->getOptions()['customTheme'])) {
-//            $theme = $this->app(ThemeManager::class)->get($item->getOptions()['customTheme']);
-//            if(isset($theme->getProvides()[self::CONTENT_VIEW_KEY])) {
-//                $view = $theme->getProvides()[self::CONTENT_VIEW_KEY];
-//            }
-//        }
-
+    protected function decoratePreviewContent($content, Page $item) {
+        $this->applyThemeOverrides($item);
         return view($this->preferences->get(self::CONTENT_VIEW_KEY))->with('content', $content);
     }
 
     /**
-     * @param Page $page
+     * @param Page|null $page
      */
-    private function applyThemeOverrides(Page $page) {
+    private function applyThemeOverrides(?Page $page) {
+        if($page === null) {
+            return;
+        }
         if(isset($page->getOptions()['customTheme'])) {
             $this->themeManager->temporarilyOverrideTheme($page->getOptions()['customTheme']);
         }
