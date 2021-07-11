@@ -80,30 +80,31 @@ class PagesController extends VersionableCrudController {
 
     /**
      * @param string $content
-     * @param mixed $item
+     * @param null|Page $page
      * @return View
      * @throws PreferenceNotFoundException
      */
-    protected function decorateContent(string $content, Page $item) {
-        $this->applyThemeOverrides($item);
+    protected function decorateContent(string $content, ?Page $page) {
+        $this->applyThemeOverrides($page);
         return view($this->preferences->get(self::PAGE_VIEW_KEY), [
-            'page' => $item,
-            'title' => $item !== null ? $item->getTitle() : null,
+            'page' => $page,
+            'title' => $page !== null ? $page->getTitle() : null,
             'content' => $content,
-            'options' => $item !== null ? $item->getOptions() : [],
-            'description' => $item !== null ? $item->getDescription() : null,
-            'tags' => $item !== null ? $item->getTags() : null,
-            'meta' => $item !== null ? $item->getMeta() : null
+            'options' => $page !== null ? $page->getOptions() : [],
+            'description' => $page !== null ? $page->getDescription() : null,
+            'tags' => $page !== null ? $page->getTags() : null,
+            'meta' => $page !== null ? $page->getMeta() : null
         ]);
     }
 
     /**
      * @param string $content
+     * @param Page|null $page
      * @return View
      * @throws PreferenceNotFoundException
      */
-    protected function decoratePreviewContent($content, Page $item) {
-        $this->applyThemeOverrides($item);
+    protected function decoratePreviewContent(string $content, ?Page $page) {
+        $this->applyThemeOverrides($page);
         return view($this->preferences->get(self::CONTENT_VIEW_KEY))->with('content', $content);
     }
 
