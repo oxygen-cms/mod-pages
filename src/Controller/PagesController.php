@@ -63,7 +63,7 @@ class PagesController extends VersionableCrudController {
      *
      * @param TwigTemplateCompiler $templating
      * @param string $slug the URI slug
-     * @return View
+     * @return Response
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
@@ -71,7 +71,13 @@ class PagesController extends VersionableCrudController {
     public function getView(TwigTemplateCompiler $templating, $slug = '/') {
         try {
             $page = $this->repository->findBySlug($slug);
-            return $this->getContent($templating, null, true, $page);
+            $view = $this->getContent($templating, null, true, $page);
+            $response = response($view);
+            if(auth()->guest()) {
+                // TODO: make this configurable by a preference item...
+                $response->header('Cache-Control', 'public, max-age=3600');
+            }
+            return $response;
         } catch(NoResultException $e) {
             abort(404, "Slug not found");
             return null;
