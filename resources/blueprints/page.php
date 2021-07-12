@@ -43,7 +43,7 @@ Blueprint::make('Page', function(\Oxygen\Core\Blueprint\Blueprint $blueprint) {
             'customRouteCallback' => function(Action $action, $route) {
                 $route->where('slug', '([a-z0-9/\-]+)');
             },
-            'middleware' => ['web'],
+            'middleware' => ['public'],
         ],
         new ActionFactory()
     );
