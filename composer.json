@@ -28,17 +28,11 @@
     },
     "minimum-stability": "stable",
     "extra": {
-        "title": "Oxygen Module - Pages",
-        "readme": "oxygen.md",
-        "changes": "changes.md",
-        "icon": "icon.png",
-        "providers": [
-            {
-                "name": "Pages",
-                "class": "OxygenModule\\Pages\\PagesServiceProvider",
-                "description": "Adds Pages & Partials to the CMS"
-            }
-        ]
+        "laravel": {
+            "providers": [
+                "OxygenModule\\Pages\\PagesServiceProvider"
+            ]
+        }
     },
     "require-dev": {
         "phpstan/phpstan": "^0.12.18",
