@@ -110,7 +110,7 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
      * @return array
      */
     public function getFillableFields(): array {
-        return ['key', 'title', 'author', 'content', 'stage'];
+        return ['key', 'title', 'author', 'content'];
     }
 
     /**

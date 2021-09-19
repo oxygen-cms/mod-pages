@@ -55,7 +55,7 @@ class PartialFieldSet extends FieldSet implements ContentFieldName {
             [
                 'name'      => 'stage',
                 'type'      => 'select',
-                'editable'  => true,
+                'editable'  => false,
                 'options'   => [
                     Partial::STAGE_DRAFT => 'Draft',
                     Partial::STAGE_PUBLISHED => 'Published',

@@ -105,7 +105,7 @@ class PageFieldSet extends FieldSet implements ContentFieldName {
             [
                 'name' => 'stage',
                 'type' => 'select',
-                'editable' => true,
+                'editable' => false,
                 'options' => [
                     Page::STAGE_DRAFT => 'Draft',
                     Page::STAGE_PENDING_REVIEW => 'Pending Review',

@@ -133,7 +133,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      * @return array
      */
     public function getFillableFields(): array {
-        return ['slug', 'title', 'author', 'description', 'tags', 'meta', 'content', 'options', 'stage'];
+        return ['slug', 'title', 'author', 'description', 'tags', 'meta', 'content', 'options'];
     }
 
     /**
