@@ -55,13 +55,11 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-
     protected $description;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-
     protected $tags;
 
     /**
@@ -170,7 +168,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
     /**
      * Retrieves the status icon for the model.
      *
-     * @return string
+     * @return string|null
      */
     public function getStatusIcon() {
         if($this->stage == self::STAGE_ARCHIVED) {
@@ -205,6 +203,34 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      */
     public function getTemplateCode() {
         return $this->content;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string {
+        return $this->title;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDescription(): ?string {
+        return $this->description;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTags(): ?string {
+        return $this->tags;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMeta(): ?string {
+        return $this->meta;
     }
 
 }
