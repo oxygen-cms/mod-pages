@@ -94,6 +94,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      */
     public function __construct() {
         $this->setOptions([]);
+        $this->stage = Publishable::STAGE_DRAFT;
         $this->versions = new ArrayCollection();
     }
 
