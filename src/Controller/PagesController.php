@@ -13,7 +13,7 @@ use Oxygen\Crud\Controller\Previewable;
 use Oxygen\Crud\Controller\Publishable;
 use Oxygen\Preferences\PreferenceNotFoundException;
 use Oxygen\Preferences\PreferencesManager;
-use Oxygen\Theme\ThemeManager;
+use Oxygen\Core\Theme\ThemeManager;
 use OxygenModule\Pages\Entity\Page;
 use OxygenModule\Pages\Fields\PageFieldSet;
 use Oxygen\Core\Blueprint\BlueprintManager;

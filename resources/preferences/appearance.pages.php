@@ -5,7 +5,7 @@ use Oxygen\Preferences\Loader\DatabaseLoader;
 use Oxygen\Preferences\Facades\Preferences;
 use Oxygen\Preferences\Schema;
 use Oxygen\Preferences\ThemeSpecificPreferencesFallback;
-use Oxygen\Theme\ThemeManager;
+use Oxygen\Core\Theme\ThemeManager;
 
 Preferences::register('appearance.pages', function(Schema $schema) {
     $schema->setTitle('Pages & Partials');
