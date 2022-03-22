@@ -92,7 +92,7 @@ class PagesController extends VersionableCrudController {
      */
     protected function decorateContent(string $content, ?Page $page) {
         $this->applyThemeOverrides($page);
-        return view($this->preferences->get(self::PAGE_VIEW_KEY), [
+        return view($this->preferences->get(self::PAGE_VIEW_KEY, 'oxygen/mod-pages::pages.view'), [
             'page' => $page,
             'title' => $page !== null ? $page->getTitle() : null,
             'content' => $content,
@@ -111,7 +111,7 @@ class PagesController extends VersionableCrudController {
      */
     protected function decoratePreviewContent(string $content, ?Page $page) {
         $this->applyThemeOverrides($page);
-        return view($this->preferences->get(self::CONTENT_VIEW_KEY))->with('content', $content);
+        return view($this->preferences->get(self::CONTENT_VIEW_KEY, 'oxygen/mod-pages::pages.content'))->with('content', $content);
     }
 
     /**
