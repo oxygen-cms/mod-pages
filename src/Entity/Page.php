@@ -6,6 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping AS ORM;
 use Oxygen\Core\Templating\Templatable;
 use Oxygen\Data\Behaviour\Accessors;
+use Oxygen\Auth\Entity\Blames;
+use Oxygen\Data\Behaviour\Blameable;
 use Oxygen\Data\Behaviour\CacheInvalidator;
 use Oxygen\Data\Behaviour\CacheInvalidatorInterface;
 use Oxygen\Data\Behaviour\Fillable;
@@ -28,9 +30,9 @@ use Oxygen\Data\Behaviour\Searchable;
  * @ORM\HasLifecycleCallbacks
  */
 
-class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface, Templatable, Versionable, HasUpdatedAt, Publishable {
+class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface, Templatable, Versionable, HasUpdatedAt, Publishable, Blameable {
 
-    use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator;
+    use PrimaryKey, Timestamps, SoftDeletes, Versions, Publishes, CacheInvalidator, Blames;
     use Accessors, Fillable;
 
     const STAGE_PENDING_REVIEW = 1;
@@ -116,6 +118,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
                 'max:255'
             ],
             'author' => [
+                'nullable',
                 'name',
                 'max:255'
             ],

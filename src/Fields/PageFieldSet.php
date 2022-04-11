@@ -3,6 +3,7 @@
 
 namespace OxygenModule\Pages\Fields;
 
+use Oxygen\Auth\Entity\User;
 use Oxygen\Core\Form\ContentFieldName;
 use Oxygen\Core\Form\FieldSet;
 use OxygenModule\Pages\Entity\Page;
@@ -15,6 +16,10 @@ class PageFieldSet extends FieldSet implements ContentFieldName {
      * @return array
      */
     public function createFields() {
+        $userDisplay = function(User $user) {
+            return $user->getFullName();
+        };
+
         return $this->makeFields([
             [
                 'name'              => 'id',
@@ -38,10 +43,6 @@ class PageFieldSet extends FieldSet implements ContentFieldName {
                 'label'             => 'URL',
                 'editable'          => true,
                 'description'       => __('oxygen/mod-pages::descriptions.page.slug')
-            ],
-            [
-                'name'              => 'author',
-                'editable'          => true
             ],
             [
                 'name'              => 'description',
@@ -80,8 +81,20 @@ class PageFieldSet extends FieldSet implements ContentFieldName {
                 'type'      => 'date'
             ],
             [
+                'name'      => 'createdBy',
+                'type'      => 'relationship',
+                'options'   => [ 'displayFn'  => $userDisplay ],
+                'editable'  => false
+            ],
+            [
                 'name'      => 'updatedAt',
                 'type'      => 'date'
+            ],
+            [
+                'name'      => 'updatedBy',
+                'type'      => 'relationship',
+                'options'   => [ 'displayFn'  => $userDisplay ],
+                'editable'  => false
             ],
             [
                 'name'      => 'deletedAt',
