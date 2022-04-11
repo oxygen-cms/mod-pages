@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Arr;
 use Oxygen\Preferences\Loader\PreferenceRepositoryInterface;
-use Oxygen\Preferences\Repository;
 
 class AddContentViewPreference extends Migration {
 
@@ -13,7 +13,9 @@ class AddContentViewPreference extends Migration {
         $preferences = App::make(PreferenceRepositoryInterface::class);
 
         $item = $preferences->findByKey('appearance.pages');
-        $item->getPreferences()->set('contentView', 'oxygen/crud::content.content');
+        $prefs = $item->getPreferences();
+        Arr::set($prefs, 'contentView', 'oxygen/crud::content.content');
+        $item->setPreferences($prefs);
         $preferences->persist($item);
     }
 
@@ -24,7 +26,9 @@ class AddContentViewPreference extends Migration {
         $preferences = App::make(PreferenceRepositoryInterface::class);
 
         $item = $preferences->findByKey('appearance.pages');
-        $item->getPreferences()->set('contentView', null);
+        $prefs = $item->getPreferences();
+        Arr::set($prefs, 'contentView', null);
+        $item->setPreferences($prefs);
         $preferences->persist($item);
     }
 }

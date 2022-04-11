@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Oxygen\Preferences\Loader\PreferenceRepositoryInterface;
-use Oxygen\Preferences\Repository;
 
 class AddPagesPreferences extends Migration {
 
@@ -14,17 +13,19 @@ class AddPagesPreferences extends Migration {
 
         $item = $preferences->make();
         $item->setKey('appearance.pages');
-        $data = new Repository([]);
-        $data->set('theme', 'oxygen/mod-pages::pages.view');
-        $item->setPreferences($data);
+        $item->setPreferences([
+            'theme' => 'oxygen/mod-pages::pages.view'
+        ]);
         $preferences->persist($item, false);
 
         $item = $preferences->make();
         $item->setKey('modules.pages');
-        $data = new Repository([]);
-        $data->set('cache.enabled', true);
-        $data->set('cache.location', '/public/content/cache');
-        $item->setPreferences($data);
+        $item->setPreferences([
+            'cache' => [
+                'enabled' => true,
+                'location' => '/public/content/cache'
+            ]
+        ]);
         $preferences->persist($item, false);
 
         $preferences->flush();

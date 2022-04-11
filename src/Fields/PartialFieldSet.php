@@ -3,6 +3,7 @@
 
 namespace OxygenModule\Pages\Fields;
 
+use Oxygen\Auth\Entity\User;
 use Oxygen\Core\Form\ContentFieldName;
 use Oxygen\Core\Form\FieldSet;
 use OxygenModule\Pages\Entity\Partial;
@@ -15,6 +16,10 @@ class PartialFieldSet extends FieldSet implements ContentFieldName {
      * @return array
      */
     public function createFields() {
+        $userDisplay = function(User $user) {
+            return $user->getFullName();
+        };
+
         return $this->makeFields([
             [
                 'name'              => 'id',
@@ -26,10 +31,6 @@ class PartialFieldSet extends FieldSet implements ContentFieldName {
             ],
             [
                 'name'              => 'title',
-                'editable'          => true
-            ],
-            [
-                'name'              => 'author',
                 'editable'          => true
             ],
             [
@@ -45,8 +46,20 @@ class PartialFieldSet extends FieldSet implements ContentFieldName {
                 'type'      => 'date'
             ],
             [
+                'name'      => 'createdBy',
+                'type'      => 'relationship',
+                'options'   => [ 'displayFn'  => $userDisplay ],
+                'editable'  => false
+            ],
+            [
                 'name'      => 'updatedAt',
                 'type'      => 'date'
+            ],
+            [
+                'name'      => 'updatedBy',
+                'type'      => 'relationship',
+                'options'   => [ 'displayFn'  => $userDisplay ],
+                'editable'  => false
             ],
             [
                 'name'      => 'deletedAt',
