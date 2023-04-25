@@ -5,8 +5,11 @@ namespace OxygenModule\Pages\Controller;
 use Illuminate\View\View;
 use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Core\Blueprint\BlueprintNotFoundException;
+use Oxygen\Crud\Controller\BasicCrudApi;
 use Oxygen\Crud\Controller\Previewable;
 use Oxygen\Crud\Controller\Publishable;
+use Oxygen\Crud\Controller\SoftDeleteCrudApi;
+use Oxygen\Crud\Controller\VersionableCrudApi;
 use Oxygen\Crud\Controller\VersionableCrudController;
 use Oxygen\Preferences\PreferenceNotFoundException;
 use Oxygen\Preferences\PreferencesManager;
@@ -17,6 +20,15 @@ class PartialsController extends VersionableCrudController {
 
     use Publishable;
     use Previewable;
+
+    use BasicCrudApi, SoftDeleteCrudApi, VersionableCrudApi {
+        VersionableCrudApi::getListQueryParameters insteadof BasicCrudApi, SoftDeleteCrudApi;
+        SoftDeleteCrudApi::deleteDeleteApi insteadof BasicCrudApi;
+    }
+
+    const PER_PAGE = 50;
+
+    const ALLOWED_SORT_FIELDS = ['title', 'key', 'updatedAt'];
 
     /**
      * @var PreferencesManager

@@ -23,6 +23,11 @@ Preferences::register('appearance.pages', function(Schema $schema) {
             'validationRules' => ['nullable', 'view_exists']
         ],
         [
+            'name' => 'contentStylesheet',
+            'label' => 'CSS stylesheet which controls preview of content in the editor.',
+            'validationRules' => []
+        ],
+        [
             'name' => 'contentView',
             'label' => 'Standalone Content View',
             'validationRules' => ['nullable', 'view_exists']

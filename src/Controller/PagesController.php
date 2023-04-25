@@ -2,15 +2,18 @@
 
 namespace OxygenModule\Pages\Controller;
 
-use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Oxygen\Core\Blueprint\BlueprintNotFoundException;
-use Oxygen\Core\Http\Notification;
 use Oxygen\Core\Templating\TwigTemplateCompiler;
+use Oxygen\Crud\Controller\BasicCrudApi;
 use Oxygen\Crud\Controller\Previewable;
 use Oxygen\Crud\Controller\Publishable;
+use Oxygen\Crud\Controller\SoftDeleteCrudApi;
+use Oxygen\Crud\Controller\VersionableCrudApi;
+use Oxygen\Data\Repository\QueryParameters;
 use Oxygen\Preferences\PreferenceNotFoundException;
 use Oxygen\Preferences\PreferencesManager;
 use Oxygen\Core\Theme\ThemeManager;
@@ -19,7 +22,9 @@ use OxygenModule\Pages\Fields\PageFieldSet;
 use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Crud\Controller\VersionableCrudController;
 use Oxygen\Data\Exception\NoResultException;
+use OxygenModule\Pages\Repository\FilterByParentPageClause;
 use OxygenModule\Pages\Repository\PageRepositoryInterface;
+use ReflectionException;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
@@ -29,8 +34,17 @@ class PagesController extends VersionableCrudController {
     private const PAGE_VIEW_KEY = 'appearance.pages::theme';
     private const CONTENT_VIEW_KEY = 'appearance.pages::contentView';
 
+    const ALLOWED_SORT_FIELDS = ['title', 'slugPart', 'description', 'updatedAt'];
+
     use Publishable;
     use Previewable;
+
+    use BasicCrudApi, SoftDeleteCrudApi, VersionableCrudApi {
+        VersionableCrudApi::getListQueryParameters as versionableCrudQueryParameters;
+        SoftDeleteCrudApi::deleteDeleteApi insteadof BasicCrudApi;
+    }
+
+    const PER_PAGE = 25;
 
     /**
      * @var PreferencesManager
@@ -56,6 +70,20 @@ class PagesController extends VersionableCrudController {
         parent::__construct($repository, $manager->get('Page'), $fields);
         $this->preferences = $preferencesManager;
         $this->themeManager = $themeManager;
+    }
+
+    /**
+     * @param Request $request
+     * @return QueryParameters
+     * @throws ReflectionException
+     */
+    protected function getListQueryParameters(Request $request): QueryParameters {
+        $queryParameters = $this->versionableCrudQueryParameters($request);
+        $path = $request->get('path', null);
+        if($path !== null) {
+            $queryParameters = $queryParameters->addClause(new FilterByParentPageClause($path));
+        }
+        return $queryParameters;
     }
 
     /**
@@ -91,16 +119,17 @@ class PagesController extends VersionableCrudController {
      * @throws PreferenceNotFoundException
      */
     protected function decorateContent(string $content, ?Page $page) {
-        $this->applyThemeOverrides($page);
-        return view($this->preferences->get(self::PAGE_VIEW_KEY, 'oxygen/mod-pages::pages.view'), [
-            'page' => $page,
-            'title' => $page !== null ? $page->getTitle() : null,
-            'content' => $content,
-            'options' => $page !== null ? $page->getOptions() : [],
-            'description' => $page !== null ? $page->getDescription() : null,
-            'tags' => $page !== null ? $page->getTags() : null,
-            'meta' => $page !== null ? $page->getMeta() : null
-        ]);
+        return $this->applyThemeOverrides($page, function() use($page, $content) {
+            return view($this->preferences->get(self::PAGE_VIEW_KEY, 'oxygen/mod-pages::pages.view'), [
+                'page' => $page,
+                'title' => $page !== null ? $page->getTitle() : null,
+                'content' => $content,
+                'options' => $page !== null ? $page->getOptions() : [],
+                'description' => $page !== null ? $page->getDescription() : null,
+                'tags' => $page !== null ? $page->getTags() : null,
+                'meta' => $page !== null ? $page->getMeta() : null
+            ]);
+        });
     }
 
     /**
@@ -110,20 +139,31 @@ class PagesController extends VersionableCrudController {
      * @throws PreferenceNotFoundException
      */
     protected function decoratePreviewContent(string $content, ?Page $page) {
-        $this->applyThemeOverrides($page);
-        return view($this->preferences->get(self::CONTENT_VIEW_KEY, 'oxygen/mod-pages::pages.content'))->with('content', $content);
+        return $this->applyThemeOverrides($page, function() use($content) {
+            return view($this->preferences->get(self::CONTENT_VIEW_KEY, 'oxygen/mod-pages::pages.content'))->with('content', $content);
+        });
     }
 
     /**
      * @param Page|null $page
+     * @param callable $inner
+     * @return mixed
      */
-    private function applyThemeOverrides(?Page $page) {
-        if($page === null) {
-            return;
+    private function applyThemeOverrides(?Page $page, callable $inner) {
+        if($page === null || !isset($page->getOptions()['customTheme'])) {
+            return $inner();
+        } else {
+            return $this->themeManager->withThemeOverride($page->getOptions()['customTheme'], $inner);
         }
-        if(isset($page->getOptions()['customTheme'])) {
-            $this->themeManager->temporarilyOverrideTheme($page->getOptions()['customTheme']);
-        }
+    }
+
+    /**
+     * @throws PreferenceNotFoundException
+     */
+    public function getThemeDetails(PreferencesManager $prefs): JsonResponse {
+        return response()->json([
+            'contentStylesheet' => $prefs->get('appearance.pages::contentStylesheet')
+        ]);
     }
 
 }

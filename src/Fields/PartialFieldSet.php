@@ -42,6 +42,14 @@ class PartialFieldSet extends FieldSet implements ContentFieldName {
                 ]
             ],
             [
+                'name'              => 'richContent',
+                'type'              => 'editor',
+                'editable'          => false,
+                'options'           => [
+                    'language'      => 'json'
+                ]
+            ],
+            [
                 'name'      => 'createdAt',
                 'type'      => 'date'
             ],

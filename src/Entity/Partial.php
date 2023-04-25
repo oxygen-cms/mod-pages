@@ -2,6 +2,7 @@
 
 namespace OxygenModule\Pages\Entity;
 
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping AS ORM;
 use Oxygen\Core\Templating\Templatable;
@@ -58,13 +59,18 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
     protected $content;
 
     /**
+     * @ORM\Column(type="json", nullable=true)
+     */
+    protected $richContent;
+
+    /**
      * @ORM\OneToMany(targetEntity="OxygenModule\Pages\Entity\Partial", mappedBy="headVersion", cascade={"persist", "remove", "merge"})
      * @ORM\OrderBy({ "updatedAt" = "DESC" })
      */
     private $versions;
 
     /**
-     * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Partial",  inversedBy="versions")
+     * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Partial",  inversedBy="versions", cascade={"persist"})
      * @ORM\JoinColumn(name="head_version", referencedColumnName="id")
      */
     private $headVersion;
@@ -114,7 +120,7 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
      * @return array
      */
     public function getFillableFields(): array {
-        return ['key', 'title', 'author', 'content'];
+        return ['key', 'title', 'author', 'content', 'richContent'];
     }
 
     /**
@@ -158,5 +164,24 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
      */
     public function getTemplateCode() {
         return $this->content;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray() {
+        return [
+            'id' => $this->id,
+            'key' => $this->key,
+            'title' => $this->title,
+            'richContent' => $this->richContent,
+            'stage' => $this->stage,
+            'headVersion' => $this->headVersion === null ? null : $this->headVersion->getId(),
+            'createdAt' => $this->createdAt !== null ? $this->createdAt->format(DateTimeInterface::ATOM) : null,
+            'createdBy' => $this->getCreatedBy() ? $this->getCreatedBy()->toArray() : null,
+            'updatedAt' => $this->updatedAt !== null ? $this->updatedAt->format(DateTimeInterface::ATOM) : null,
+            'updatedBy' => $this->getUpdatedBy() ? $this->getUpdatedBy()->toArray() : null,
+            'deletedAt' => $this->deletedAt !== null ? $this->deletedAt->format(DateTimeInterface::ATOM) : null,
+        ];
     }
 }

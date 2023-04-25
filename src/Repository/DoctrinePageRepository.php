@@ -4,6 +4,7 @@ namespace OxygenModule\Pages\Repository;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException as DoctrineNoResultException;
+use Doctrine\ORM\Query\Expr\Join;
 use Oxygen\Core\Templating\Templatable;
 use Oxygen\Data\Exception\NoResultException;
 use Oxygen\Data\Repository\Doctrine\Publishes;
@@ -12,6 +13,7 @@ use Oxygen\Data\Repository\Doctrine\Versions;
 use Oxygen\Data\Repository\ExcludeTrashedScope;
 use Oxygen\Data\Repository\ExcludeVersionsScope;
 use Oxygen\Data\Repository\QueryParameters;
+use OxygenModule\Media\Entity\MediaDirectory;
 use OxygenModule\Pages\Entity\Page;
 
 class DoctrinePageRepository extends Repository implements PageRepositoryInterface {
@@ -32,17 +34,26 @@ class DoctrinePageRepository extends Repository implements PageRepositoryInterfa
      * Finds a Page based upon the slug.
      *
      * @param string $slug
+     * @param bool $onlyPublished
      * @return Page
-     *@throws NoResultException|NonUniqueResultException
+     * @throws NonUniqueResultException
      */
-    public function findBySlug($slug, $onlyPublished = true) {
-        $qb = $this->createSelectQuery()
-            ->andWhere('o.slug = :slug')
-            ->setParameter('slug', $slug);
-        $clauses = [new ExcludeTrashedScope()];
+    public function findBySlug($slug, $onlyPublished = true): Page {
+        $slugParts = $slug === '/' ?  ['/'] : explode('/', $slug);
+        $finalPart = array_pop($slugParts);
+
+        $qb = $this->entities
+            ->createQueryBuilder()
+            ->select('o')
+            ->from($this->entityName, 'o')
+            ->andWhere('o.slugPart = :name0')
+            ->setParameter('name0', $finalPart);
+
+        $clauses = [new ExcludeTrashedScope(), new FilterByParentPageClause(implode('/', $slugParts))];
+
         if($onlyPublished) {
             $qb->andWhere('o.stage = :stage')
-               ->setParameter('stage', Page::STAGE_PUBLISHED);
+                ->setParameter('stage', Page::STAGE_PUBLISHED);
         } else {
             $clauses[] = new ExcludeVersionsScope();
         }

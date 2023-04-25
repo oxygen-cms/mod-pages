@@ -4,7 +4,6 @@ use Oxygen\Crud\BlueprintTrait\PreviewableCrudTrait;
 use Oxygen\Crud\BlueprintTrait\PublishableCrudTrait;
 use Oxygen\Crud\BlueprintTrait\VersionableCrudTrait;
 use OxygenModule\Pages\Controller\PartialsController;
-use Oxygen\Crud\BlueprintTrait\SearchableCrudTrait;
 use Oxygen\Core\Support\Facades\Blueprint;
 
 Blueprint::make('Partial', function(\Oxygen\Core\Blueprint\Blueprint $blueprint) {
@@ -13,7 +12,7 @@ Blueprint::make('Partial', function(\Oxygen\Core\Blueprint\Blueprint $blueprint)
 
     $blueprint->setToolbarOrders([
         'section' => [
-            'getList.search', 'getCreate', 'getTrash'
+            'getCreate'
         ],
         'item' => [
             'postPublish',
@@ -28,5 +27,4 @@ Blueprint::make('Partial', function(\Oxygen\Core\Blueprint\Blueprint $blueprint)
     $blueprint->useTrait(new PreviewableCrudTrait());
     $blueprint->useTrait(new VersionableCrudTrait());
     $blueprint->useTrait(new PublishableCrudTrait());
-    $blueprint->useTrait(new SearchableCrudTrait());
 });

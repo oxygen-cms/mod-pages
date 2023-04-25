@@ -3,10 +3,13 @@
 namespace OxygenModule\Pages;
 
 use Oxygen\Core\Blueprint\BlueprintManager;
+use Oxygen\Core\Content\ObjectLinkRegistry;
 use Oxygen\Core\Templating\DoctrineResourceLoader;
 use Oxygen\Core\Templating\TwigTemplateCompiler;
 use Oxygen\Data\BaseServiceProvider;
 use Oxygen\Preferences\PreferencesManager;
+use OxygenModule\Pages\Console\AddTreeHierarchy;
+use OxygenModule\Pages\Console\ConvertPageContent;
 use OxygenModule\Pages\Repository\DoctrinePageRepository;
 use OxygenModule\Pages\Repository\DoctrinePartialRepository;
 use OxygenModule\Pages\Repository\PageRepositoryInterface;
@@ -23,11 +26,15 @@ class PagesServiceProvider extends BaseServiceProvider {
     public function boot() {
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'oxygen/mod-pages');
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'oxygen/mod-pages');
+        $this->loadRoutesFrom(__DIR__ . '/../resources/routes.php');
 
         $this->publishes([
             __DIR__ . '/../resources/lang' => base_path('resources/lang/vendor/oxygen/mod-pages'),
             __DIR__ . '/../resources/views' => base_path('resources/views/vendor/oxygen/mod-pages')
         ]);
+
+        $this->commands(ConvertPageContent::class);
+        $this->commands(AddTreeHierarchy::class);
 
         // Blueprints
         $this->app[BlueprintManager::class]->loadDirectory(__DIR__ . '/../resources/blueprints');
@@ -50,9 +57,16 @@ class PagesServiceProvider extends BaseServiceProvider {
         });
 
         $this->app->resolving(TwigTemplateCompiler::class, function(TwigTemplateCompiler $c, $app) {
-            $c->getLoader()->addResourceType('pages', new DoctrineResourceLoader($app, PageRepositoryInterface::class));
-            $c->getLoader()->addResourceType('partials', new DoctrineResourceLoader($app, PartialRepositoryInterface::class));
+            $c->getLoader()->addResourceType('pages', new DoctrineResourceLoader($app, PageRepositoryInterface::class, function(DoctrineResourceLoader $loader, string $key) {
+                return false;
+            }));
+            $c->getLoader()->addResourceType('partials', new DoctrineResourceLoader($app, PartialRepositoryInterface::class, function(DoctrineResourceLoader $loader, string $key) {
+                $partial = $loader->getByKey($key);
+                return '<div data-partial-id="' . $partial->getId() . '"></div>';
+            }));
         });
+
+        $this->app[ObjectLinkRegistry::class]->addType(new PageLinkType($this->app[PageRepositoryInterface::class]));
     }
 
     /**
