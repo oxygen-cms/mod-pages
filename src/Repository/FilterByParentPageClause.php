@@ -30,7 +30,6 @@ class FilterByParentPageClause implements QueryClauseInterface {
         $iMinusOne = $i-1;
         $prev = $i === 1 ? $alias : "d$iMinusOne";
         $qb->andWhere("$prev.parent is NULL");
-        logger()->info($qb->getQuery()->getSQL() . "\n" . print_r($qb->getParameters(), true));
         return $qb;
     }
 }

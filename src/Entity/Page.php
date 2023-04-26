@@ -4,8 +4,11 @@ namespace OxygenModule\Pages\Entity;
 
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping AS ORM;
+use Exception;
 use Oxygen\Core\Templating\Templatable;
 use Oxygen\Data\Behaviour\Accessors;
 use Oxygen\Auth\Entity\Blames;
@@ -27,9 +30,7 @@ use Oxygen\Data\Validation\Rules\Unique;
 use Oxygen\Data\Validation\Validatable;
 use Oxygen\Data\Behaviour\Searchable;
 use Oxygen\Data\Validation\ValidationService;
-use OxygenModule\Media\Entity\Media;
-use OxygenModule\Media\Entity\MediaDirectory;
-use TeamOfPianists\People\Entity\Tag;
+use OxygenModule\Pages\ParentChildCycleException;
 
 /**
  * @ORM\Entity
@@ -189,7 +190,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      * @return array
      */
     public function getFillableFields(): array {
-        return ['slug', 'slugPart', 'title', 'author', 'description', 'tags', 'meta', 'content', 'richContent', 'options', 'parent'];
+        return ['slug', 'slugPart', 'title', 'author', 'description', 'tags', 'meta', 'content', 'richContent', 'options', 'parent', 'stage'];
     }
 
     /**
@@ -218,7 +219,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      * @return array
      */
     public static function getSearchableFields() {
-        return ['slug', 'title', 'description'];
+        return ['slugPart', 'title', 'description'];
     }
 
     // TODO: get rid of this
@@ -252,7 +253,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      * @return string
      */
     public function getResourceKey() {
-        return $this->slug;
+        return $this->getSlug();
     }
 
     /**
@@ -301,16 +302,48 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
     }
 
     /**
-     * @param string|int|null $parent
+     * @param int|Page|null $page
      * @return $this
+     * @throws ParentChildCycleException if there is a cycle
      */
-    public function setParent($parent): Page {
-        if(is_integer($parent)) {
-            $this->parent = app(EntityManager::class)->getReference(Page::class, $parent);
+    public function setParent($page): Page {
+        if(is_integer($page))
+        {
+            $page = app(EntityManager::class)->find(Page::class, $page);
+        }
+        $parent = $page;
+        do {
+            if($parent->getHead() === $this->getHead())
+            {
+                throw new ParentChildCycleException('refusing to create cycle in parent - child relationship');
+            }
+        }
+        while($parent = $parent->getParent());
+        if($page->getSlug() === '/') {
+            $this->parent = null;
         } else {
-            $this->parent = $parent;
+            $this->parent = $page;
         }
         return $this;
+    }
+
+    /**
+     * Canonicalises the parent page.
+     * $parent with slug '/' is the same as $parent = null
+     *
+     * @return Page|null
+     */
+    public function getParent(): ?Page
+    {
+        if(!$this->parent)
+        {
+            return null;
+        }
+        if($this->parent->getSlug() === '/')
+        {
+            return null;
+        }
+        return $this->parent;
     }
 
     /**
@@ -331,13 +364,11 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      * @return string
      */
     public function getSlug() {
-        $slug = $this->slugPart;
-        $t = $this;
-        while($t->parent !== null) {
-            $t = $t->parent;
-            $slug = $t->slugPart . '/' . $slug;
+        if($this->getParent() === null && $this->slugPart === '/')
+        {
+            return '/';
         }
-        return '/' . ltrim($slug, '/');
+        return ltrim(rtrim($this->getParent() ? $this->getParent()->getSlug() : '/', '/') . '/' . $this->slugPart, '/');
     }
 
     /**
@@ -346,7 +377,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
     public function toArray(): array {
         return [
             'id' => $this->id,
-            'slug' => $this->slug,
+            'slug' => $this->getSlug(),
             'slugPart' => $this->slugPart,
             'title' => $this->title,
             'tags' => array_map(function($item) { return trim($item); }, explode(',', $this->tags)),
@@ -361,8 +392,10 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
             'updatedAt' => $this->updatedAt !== null ? $this->updatedAt->format(DateTimeInterface::ATOM) : null,
             'updatedBy' => $this->getUpdatedBy() ? $this->getUpdatedBy()->toArray() : null,
             'deletedAt' => $this->deletedAt !== null ? $this->deletedAt->format(DateTimeInterface::ATOM) : null,
-            'parent' => $this->parent ? $this->parent->getId() : null,
-            'numChildren' => $this->children->count()
+            'parent' => $this->getParent() ? $this->getParent()->getId() : null,
+            // re-implement ExcludeTrashed and ExcludeVersions scope
+            // Note: edge-case if deletedAt > current time
+            'numChildren' => $this->children->matching((new Criteria())->where(new Comparison('deletedAt', Comparison::EQ, null))->andWhere(new Comparison('headVersion', Comparison::EQ, null)))->count()
         ];
     }
 

@@ -39,8 +39,8 @@ class PageFieldSet extends FieldSet implements ContentFieldName {
                 'editable'          => true
             ],
             [
-                'name'              => 'slug',
-                'label'             => 'URL',
+                'name'              => 'slugPart',
+                'label'             => 'URL Part',
                 'editable'          => true,
                 'description'       => __('oxygen/mod-pages::descriptions.page.slug')
             ],
