@@ -153,7 +153,10 @@ class PagesController extends VersionableCrudController {
         if($page === null || !isset($page->getOptions()['customTheme'])) {
             return $inner();
         } else {
-            return $this->themeManager->withThemeOverride($page->getOptions()['customTheme'], $inner);
+            $this->themeManager->temporarilyOverrideTheme($page->getOptions()['customTheme']);
+            $ret = $inner();
+            $this->themeManager->temporarilyOverrideTheme(null);
+            return $ret;
         }
     }
 

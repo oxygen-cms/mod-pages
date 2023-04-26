@@ -40,7 +40,7 @@ class AddTreeHierarchy extends Command {
         Arr::sort($allPages, function(Page $page) { return $page->getSlug(); });
         foreach($allPages as $page) {
             // try to find a page which has a given parent...
-            $slug = ltrim($page->getSlug(), '/');
+            $slug = ltrim($page->getRawSlugField(), '/');
             $slugParts = explode('/', $slug);
             $slugPart = array_pop($slugParts);
             $slugPart = $slugPart === '' ? '/' : $slugPart;
@@ -59,7 +59,7 @@ class AddTreeHierarchy extends Command {
         }
         $disp = [];
         foreach($processedPages as $page) {
-            $disp[$page->getSlug()] = [ 'part' => $page->getSlugPart(), 'parent' => $page->getParent() ? $page->getParent()->getSlugPart() : null ];
+            $disp[$page->getRawSlugField()] = [ 'part' => $page->getSlugPart(), 'parent' => $page->getParent() ? $page->getParent()->getSlugPart() : null ];
         }
         dump($disp);
 
@@ -75,30 +75,6 @@ class AddTreeHierarchy extends Command {
         } catch(InvalidEntityException $e) {
             $this->output->writeln('page with id ' . $e->getEntity()->getId() . ' failed validation ' . $e);
         }
-//        $page = $pages->find(intval($this->argument('id')));
-//        $templateCompiler->setConvertToTipTap($page);
-//        $rendered = $templateCompiler->render($page);
-//        dump($rendered);
-//        $editor = new Editor([
-//            'extensions' => [
-//                new StarterKit,
-//                new Underline,
-//                new Link,
-//                new GridRowNode,
-//                new GridCellNode,
-//                new PartialNode,
-//                new MediaItemNode,
-//                new RawHtmlNode(),
-//                new BlockEmphasisNode(),
-//                new SmallMark(),
-//                new ObjectLinkMark($registry)
-//            ]
-//        ]);
-//        $editor->setContent($rendered);
-//        $jsonDoc = $editor->getDocument();
-//        dump($jsonDoc);
-//        $page->setRichContent($jsonDoc);
-//        $pages->persist($page);
     }
 
 }

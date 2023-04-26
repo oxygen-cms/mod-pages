@@ -146,7 +146,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
             ],
             'slugPart' => [
                 'required',
-                'slug',
+                'alpha_dash',
                 'max:255',
                 $this->getUniqueSlugValidationRule(),
             ],
@@ -312,14 +312,14 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
             $page = app(EntityManager::class)->find(Page::class, $page);
         }
         $parent = $page;
-        do {
+        while($parent) {
             if($parent->getHead() === $this->getHead())
             {
                 throw new ParentChildCycleException('refusing to create cycle in parent - child relationship');
             }
+            $parent = $parent->getParent();
         }
-        while($parent = $parent->getParent());
-        if($page->getSlug() === '/') {
+        if($page === null || $page->getSlug() === '/') {
             $this->parent = null;
         } else {
             $this->parent = $page;
@@ -368,7 +368,15 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
         {
             return '/';
         }
-        return ltrim(rtrim($this->getParent() ? $this->getParent()->getSlug() : '/', '/') . '/' . $this->slugPart, '/');
+        return ltrim(rtrim($this->getParent() ? $this->getParent()->getSlug() : '/', '/') . 'Page.php/' . $this->slugPart, '/');
+    }
+
+    /**
+     * TODO: remove this once migration is complete
+     * @return string
+     */
+    public function getRawSlugField() {
+        return $this->slug;
     }
 
     /**
