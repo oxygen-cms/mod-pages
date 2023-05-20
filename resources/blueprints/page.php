@@ -20,6 +20,7 @@ Blueprint::make('Page', function(\Oxygen\Core\Blueprint\Blueprint $blueprint) {
         ],
         'item' => [
             'postPublish',
+            'postUnpublish',
             'getPreview',
             'getUpdate,More' => ['getView', 'postNewVersion', 'postMakeHeadVersion', 'deleteDelete', 'postRestore', 'deleteForce'],
         ],

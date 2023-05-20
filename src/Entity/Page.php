@@ -368,7 +368,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
         {
             return '/';
         }
-        return ltrim(rtrim($this->getParent() ? $this->getParent()->getSlug() : '/', '/') . 'Page.php/' . $this->slugPart, '/');
+        return ltrim(rtrim($this->getParent() ? $this->getParent()->getSlug() : '/', '/') . '/' . $this->slugPart, '/');
     }
 
     /**

@@ -16,6 +16,7 @@ Blueprint::make('Partial', function(\Oxygen\Core\Blueprint\Blueprint $blueprint)
         ],
         'item' => [
             'postPublish',
+            'postUnpublish',
             'getPreview',
             'getUpdate,More' => ['postNewVersion', 'postMakeHeadVersion', 'deleteDelete', 'postRestore', 'deleteForce'],
         ],
