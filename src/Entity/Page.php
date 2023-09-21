@@ -336,19 +336,6 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
     }
 
     /**
-     * Sets the slug, and at the same time sets the slugPart
-     *
-     * @param $slug
-     * @return void
-     */
-    public function setSlug($slug) {
-        $this->slug = $slug;
-        $parts = explode('/', $slug);
-        $this->slugPart = array_pop($parts);
-        if($this->slugPart === '') { $this->slugPart = '/'; }
-    }
-
-    /**
      * Return the slug for this page.
      * @return string
      */
