@@ -50,11 +50,6 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
     /**
      * @ORM\Column(type="string")
      */
-    protected $slug;
-
-    /**
-     * @ORM\Column(type="string")
-     */
     protected $slugPart;
 
     /**
@@ -117,7 +112,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
 
     /**
      * @ORM\OneToMany(targetEntity="OxygenModule\Pages\Entity\Page", mappedBy="parent", cascade={"persist"})
-     * @ORM\OrderBy({ "slug" = "ASC" })
+     * @ORM\OrderBy({ "slugPart" = "ASC" })
      */
     private $children;
 
@@ -138,15 +133,9 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      */
     public function getValidationRules() {
         return [
-            'slug' => [
-                'required',
-                'slug',
-                'max:255',
-                $this->getUniqueValidationRule('slug')
-            ],
             'slugPart' => [
                 'required',
-                'alpha_dash',
+                'regex:/^(\\/|[a-z0-9_\-]+)$/i',
                 'max:255',
                 $this->getUniqueSlugValidationRule(),
             ],
@@ -190,7 +179,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      * @return array
      */
     public function getFillableFields(): array {
-        return ['slug', 'slugPart', 'title', 'author', 'description', 'tags', 'meta', 'content', 'richContent', 'options', 'parent', 'stage'];
+        return ['slugPart', 'title', 'author', 'description', 'tags', 'meta', 'content', 'richContent', 'options', 'parent', 'stage'];
     }
 
     /**
@@ -369,14 +358,6 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
             return '/';
         }
         return ltrim(rtrim($this->getParent() ? $this->getParent()->getSlug() : '/', '/') . '/' . $this->slugPart, '/');
-    }
-
-    /**
-     * TODO: remove this once migration is complete
-     * @return string
-     */
-    public function getRawSlugField() {
-        return $this->slug;
     }
 
     /**
