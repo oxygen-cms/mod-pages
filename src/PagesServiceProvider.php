@@ -8,7 +8,6 @@ use Oxygen\Core\Templating\DoctrineResourceLoader;
 use Oxygen\Core\Templating\TwigTemplateCompiler;
 use Oxygen\Data\BaseServiceProvider;
 use Oxygen\Preferences\PreferencesManager;
-use OxygenModule\Pages\Console\AddTreeHierarchy;
 use OxygenModule\Pages\Console\ConvertPageContent;
 use OxygenModule\Pages\Repository\DoctrinePageRepository;
 use OxygenModule\Pages\Repository\DoctrinePartialRepository;
@@ -34,7 +33,6 @@ class PagesServiceProvider extends BaseServiceProvider {
         ]);
 
         $this->commands(ConvertPageContent::class);
-        $this->commands(AddTreeHierarchy::class);
 
         // Blueprints
         $this->app[BlueprintManager::class]->loadDirectory(__DIR__ . '/../resources/blueprints');
