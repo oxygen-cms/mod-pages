@@ -36,9 +36,9 @@ class DoctrinePageRepository extends Repository implements PageRepositoryInterfa
      * @param string $slug
      * @param bool $onlyPublished
      * @return Page
-     * @throws NonUniqueResultException
+     * @throws NonUniqueResultException|NoResultException
      */
-    public function findBySlug($slug, $onlyPublished = true): Page {
+    public function findBySlug($slug, bool $onlyPublished = true): Page {
         $slugParts = $slug === '/' ?  ['/'] : explode('/', $slug);
         $finalPart = array_pop($slugParts);
 
@@ -72,10 +72,11 @@ class DoctrinePageRepository extends Repository implements PageRepositoryInterfa
 
     /**
      * @param string $key
-     * @return Templatable|null
+     * @param bool $onlyPublished
+     * @return Page|null
      * @throws NonUniqueResultException
      */
-    public function findByTemplateKey($key, $onlyPublished = true) {
+    public function findByTemplateKey($key, bool $onlyPublished = true): ?Page {
         try {
             return $this->findBySlug($key, $onlyPublished);
         } catch(NoResultException $e) {

@@ -33,9 +33,9 @@ class DoctrinePartialRepository extends Repository implements PartialRepositoryI
      * @param string $key
      * @param bool $onlyPublished
      * @return Partial
-     * @throws NonUniqueResultException
+     * @throws NonUniqueResultException|NoResultException
      */
-    public function findByKey($key, $onlyPublished = true) {
+    public function findByKey($key, bool $onlyPublished = true): Partial {
         $qb = $this->createSelectQuery()
             ->andWhere('o.key = :key')
             ->setParameter('key', $key);
@@ -63,10 +63,10 @@ class DoctrinePartialRepository extends Repository implements PartialRepositoryI
     /**
      * @param string $key
      * @param bool $onlyPublished
-     * @return Templatable|null
+     * @return Partial|null
      * @throws NonUniqueResultException
      */
-    public function findByTemplateKey($key, $onlyPublished = true) {
+    public function findByTemplateKey($key, bool $onlyPublished = true): ?Partial {
         try {
             return $this->findByKey($key, $onlyPublished);
         } catch(NoResultException $e) {

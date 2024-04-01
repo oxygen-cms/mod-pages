@@ -16,6 +16,6 @@ interface PartialRepositoryInterface extends RepositoryInterface, TemplatableRep
      * @throws NoResultException
      * @return Partial
      */
-    public function findByKey($key);
+    public function findByKey(string $key);
 
 }

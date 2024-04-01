@@ -28,6 +28,7 @@ use ReflectionException;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
+use Webmozart\Assert\Assert;
 
 class PagesController extends VersionableCrudController {
 
@@ -98,6 +99,7 @@ class PagesController extends VersionableCrudController {
      */
     public function getView(TwigTemplateCompiler $templating, $slug = '/') {
         try {
+            Assert::isInstanceOf($this->repository, PageRepositoryInterface::class);
             $page = $this->repository->findBySlug($slug);
             $view = $this->getContent($templating, null, true, $page);
             $response = response($view);
@@ -108,7 +110,6 @@ class PagesController extends VersionableCrudController {
             return $response;
         } catch(NoResultException $e) {
             abort(404, "Slug not found");
-            return null;
         }
     }
 
