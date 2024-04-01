@@ -5,6 +5,7 @@ namespace OxygenModule\Pages\Console;
 
 use Illuminate\Auth\AuthManager;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Auth\StatefulGuard;
 use Oxygen\Auth\Repository\UserRepositoryInterface;
 use Oxygen\Core\Content\BlockEmphasisNode;
 use Oxygen\Core\Content\GridCellNode;
@@ -22,6 +23,7 @@ use Tiptap\Editor;
 use Tiptap\Extensions\StarterKit;
 use Tiptap\Marks\Link;
 use Tiptap\Marks\Underline;
+use Webmozart\Assert\Assert;
 
 class ConvertPageContent extends Command {
 
@@ -42,7 +44,9 @@ class ConvertPageContent extends Command {
     public function handle(PageRepositoryInterface $pages, AuthManager $auth, UserRepositoryInterface $users, TwigTemplateCompiler $templateCompiler, ThemeManager $theme, ObjectLinkRegistry $registry) {
         $theme->current()->boot();
         $user = $users->findByUsername($this->option('as-user'));
-        $auth->guard()->login($user);
+        $guard = $auth->guard();
+        Assert::isInstanceOf($guard, StatefulGuard::class);
+        $guard->login($user);
         $page = $pages->find(intval($this->argument('id')));
         $templateCompiler->setConvertToTipTap($page);
         $rendered = $templateCompiler->render($page);

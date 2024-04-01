@@ -73,7 +73,7 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
      * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Partial",  inversedBy="versions", cascade={"persist"})
      * @ORM\JoinColumn(name="head_version", referencedColumnName="id")
      */
-    private $headVersion;
+    private ?Partial $headVersion;
 
     /**
      * Constructs a new Partial.
@@ -81,6 +81,7 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
     public function __construct() {
         $this->versions = new ArrayCollection();
         $this->stage = Partial::STAGE_DRAFT;
+        $this->headVersion = null;
     }
 
     /**

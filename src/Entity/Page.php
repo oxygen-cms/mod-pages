@@ -4,6 +4,7 @@ namespace OxygenModule\Pages\Entity;
 
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\EntityManager;
@@ -96,7 +97,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      * @ORM\OneToMany(targetEntity="OxygenModule\Pages\Entity\Page", mappedBy="headVersion", cascade={"persist", "remove", "merge"})
      * @ORM\OrderBy({ "updatedAt" = "DESC" })
      */
-    private $versions;
+    private Collection $versions;
 
     /**
      * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Page",  inversedBy="versions")

@@ -51,10 +51,10 @@ class PartialsController extends VersionableCrudController {
 
     /**
      * @param string $content
-     * @return View
+     * @return \Illuminate\Contracts\View\View
      * @throws PreferenceNotFoundException
      */
-    protected function decoratePreviewContent($content) {
+    protected function decoratePreviewContent(string $content): \Illuminate\Contracts\View\View {
         return view($this->preferences->get('appearance.pages::contentView'))->with('content', $content);
     }
 
