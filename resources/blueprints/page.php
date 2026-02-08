@@ -15,9 +15,7 @@ Blueprint::make('Page', function(\Oxygen\Core\Blueprint\Blueprint $blueprint) {
     $blueprint->setIcon('file-o');
 
     $blueprint->setToolbarOrders([
-        'section' => [
-            'getCreate'
-        ],
+        'section' => [],
         'item' => [
             'postPublish',
             'postUnpublish',

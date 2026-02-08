@@ -11,9 +11,7 @@ Blueprint::make('Partial', function(\Oxygen\Core\Blueprint\Blueprint $blueprint)
     $blueprint->setIcon('puzzle-piece');
 
     $blueprint->setToolbarOrders([
-        'section' => [
-            'getCreate'
-        ],
+        'section' => [],
         'item' => [
             'postPublish',
             'postUnpublish',
