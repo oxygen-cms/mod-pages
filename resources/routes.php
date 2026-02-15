@@ -16,6 +16,7 @@ $router->prefix('/oxygen/api')
             PagesController::registerSoftDeleteRoutes($router);
             PagesController::registerVersionableRoutes($router);
             PagesController::registerPublishableRoutes($router);
+            PagesController::registerPreviewableRoutes($router);
         });
 
         // partials
@@ -24,6 +25,7 @@ $router->prefix('/oxygen/api')
             PartialsController::registerSoftDeleteRoutes($router);
             PartialsController::registerVersionableRoutes($router);
             PartialsController::registerPublishableRoutes($router);
+            PartialsController::registerPreviewableRoutes($router);
         });
 
         $router->get('theme/details', [PagesController::class, 'getThemeDetails'])->name('pages.getThemeDetails');

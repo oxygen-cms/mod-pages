@@ -175,6 +175,7 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
             'id' => $this->id,
             'key' => $this->key,
             'title' => $this->title,
+            'content' => $this->content,
             'richContent' => $this->richContent,
             'stage' => $this->stage,
             'headVersion' => $this->headVersion === null ? null : $this->headVersion->getId(),
