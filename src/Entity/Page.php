@@ -361,6 +361,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
             'description' => $this->description,
             'meta' => $this->meta,
             'options' => $this->options,
+            'content' => $this->content,
             'richContent' => $this->richContent,
             'stage' => $this->stage,
             'headVersion' => $this->headVersion === null ? null : $this->headVersion->getId(),
