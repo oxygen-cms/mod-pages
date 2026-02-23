@@ -2,51 +2,47 @@
 
 namespace OxygenModule\Pages\Controller;
 
-use Illuminate\View\View;
-use Oxygen\Core\Blueprint\BlueprintManager;
-use Oxygen\Core\Blueprint\BlueprintNotFoundException;
-use Oxygen\Crud\Controller\BasicCrudApi;
-use Oxygen\Crud\Controller\Previewable;
-use Oxygen\Crud\Controller\Publishable;
-use Oxygen\Crud\Controller\SoftDeleteCrudApi;
-use Oxygen\Crud\Controller\VersionableCrudApi;
-use Oxygen\Crud\Controller\VersionableCrudController;
-use Oxygen\Preferences\PreferenceNotFoundException;
-use Oxygen\Preferences\PreferencesManager;
-use OxygenModule\Pages\Fields\PartialFieldSet;
+use Illuminate\Routing\Controller;
+use Oxygen\Core\Controller\BasicCrudTrait;
+use Oxygen\Core\Controller\PreviewableCrudTrait;
+use Oxygen\Core\Controller\PublishableCrudTrait;
+use Oxygen\Core\Controller\SoftDeleteCrudTrait;
+use Oxygen\Core\Controller\VersionableCrudTrait;
+use Oxygen\Core\Preferences\PreferenceNotFoundException;
+use Oxygen\Core\Preferences\PreferencesManager;
 use OxygenModule\Pages\Repository\PartialRepositoryInterface;
 
-class PartialsController extends VersionableCrudController {
+class PartialsController extends Controller {
 
-    use Publishable;
-    use Previewable;
+    use PublishableCrudTrait;
+    use PreviewableCrudTrait;
 
-    use BasicCrudApi, SoftDeleteCrudApi, VersionableCrudApi {
-        VersionableCrudApi::getListQueryParameters insteadof BasicCrudApi, SoftDeleteCrudApi;
-        SoftDeleteCrudApi::deleteDeleteApi insteadof BasicCrudApi;
+    use BasicCrudTrait, SoftDeleteCrudTrait, VersionableCrudTrait {
+        VersionableCrudTrait::getListQueryParameters insteadof BasicCrudTrait, SoftDeleteCrudTrait;
+        SoftDeleteCrudTrait::deleteDeleteApi insteadof BasicCrudTrait;
     }
 
     const PER_PAGE = 50;
 
     const ALLOWED_SORT_FIELDS = ['title', 'key', 'updatedAt'];
 
-    /**
-     * @var PreferencesManager
-     */
-    private $preferences;
+    const LANG_MAPPINGS = [
+        'resource' => 'Partial',
+        'pluralResource' => 'Partials'
+    ];
 
-    /**
-     * Constructs the PagesController.
-     *
-     * @param PartialRepositoryInterface $repository
-     * @param BlueprintManager $manager
-     * @param PartialFieldSet $fields
-     * @param PreferencesManager $preferencesManager
-     * @throws BlueprintNotFoundException
-     */
-    public function __construct(PartialRepositoryInterface $repository, BlueprintManager $manager, PartialFieldSet $fields, PreferencesManager $preferencesManager) {
-        parent::__construct($repository, $manager->get('Partial'), $fields);
+    protected PartialRepositoryInterface $repository;
+
+    private PreferencesManager $preferences;
+
+    public function __construct(PartialRepositoryInterface $repository, PreferencesManager $preferencesManager) {
+        $this->repository = $repository;
         $this->preferences = $preferencesManager;
+        BasicCrudTrait::setupLangMappings(self::LANG_MAPPINGS);
+    }
+
+    protected function getItem($item) {
+        return is_object($item) ? $item : $this->repository->find((int) $item);
     }
 
     /**
