@@ -2,12 +2,11 @@
 
 namespace OxygenModule\Pages;
 
-use Oxygen\Core\Blueprint\BlueprintManager;
 use Oxygen\Core\Content\ObjectLinkRegistry;
 use Oxygen\Core\Templating\DoctrineResourceLoader;
 use Oxygen\Core\Templating\TwigTemplateCompiler;
 use Oxygen\Data\BaseServiceProvider;
-use Oxygen\Preferences\PreferencesManager;
+use Oxygen\Core\Preferences\PreferencesManager;
 use OxygenModule\Pages\Console\ConvertPageContent;
 use OxygenModule\Pages\Repository\DoctrinePageRepository;
 use OxygenModule\Pages\Repository\DoctrinePartialRepository;
@@ -34,8 +33,6 @@ class PagesServiceProvider extends BaseServiceProvider {
 
         $this->commands(ConvertPageContent::class);
 
-        // Blueprints
-        $this->app[BlueprintManager::class]->loadDirectory(__DIR__ . '/../resources/blueprints');
         $this->app[PreferencesManager::class]->loadDirectory(__DIR__ . '/../resources/preferences');
         $this->loadMigrationsFrom(__DIR__ . '/../migrations');
 

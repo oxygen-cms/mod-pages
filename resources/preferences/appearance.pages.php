@@ -1,10 +1,10 @@
 <?php
 
-use Oxygen\Preferences\Loader\PreferenceRepositoryInterface;
-use Oxygen\Preferences\Loader\DatabaseLoader;
-use Oxygen\Preferences\Facades\Preferences;
-use Oxygen\Preferences\Schema;
-use Oxygen\Preferences\ThemeSpecificPreferencesFallback;
+use Oxygen\Core\Facades\Preferences;
+use Oxygen\Core\Preferences\Loader\PreferenceRepositoryInterface;
+use Oxygen\Core\Preferences\Loader\DatabaseLoader;
+use Oxygen\Core\Preferences\Schema;
+use Oxygen\Core\Preferences\ThemeSpecificPreferencesFallback;
 use Oxygen\Core\Theme\ThemeManager;
 
 Preferences::register('appearance.pages', function(Schema $schema) {

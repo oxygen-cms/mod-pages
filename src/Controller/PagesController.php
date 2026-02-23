@@ -5,23 +5,19 @@ namespace OxygenModule\Pages\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
 use Illuminate\View\View;
-use Oxygen\Core\Blueprint\BlueprintNotFoundException;
 use Oxygen\Core\Templating\TwigTemplateCompiler;
-use Oxygen\Crud\Controller\BasicCrudApi;
-use Oxygen\Crud\Controller\Previewable;
-use Oxygen\Crud\Controller\Publishable;
-use Oxygen\Crud\Controller\SoftDeleteCrudApi;
-use Oxygen\Crud\Controller\VersionableCrudApi;
+use Oxygen\Core\Controller\BasicCrudTrait;
+use Oxygen\Core\Controller\PreviewableCrudTrait;
+use Oxygen\Core\Controller\PublishableCrudTrait;
+use Oxygen\Core\Controller\SoftDeleteCrudTrait;
+use Oxygen\Core\Controller\VersionableCrudTrait;
 use Oxygen\Data\Repository\QueryParameters;
-use Oxygen\Preferences\PreferenceNotFoundException;
-use Oxygen\Preferences\PreferencesManager;
+use Oxygen\Core\Preferences\PreferenceNotFoundException;
+use Oxygen\Core\Preferences\PreferencesManager;
 use Oxygen\Core\Theme\ThemeManager;
 use OxygenModule\Pages\Entity\Page;
-use OxygenModule\Pages\Fields\PageFieldSet;
-use Oxygen\Core\Blueprint\BlueprintManager;
-use Oxygen\Crud\Controller\VersionableCrudController;
-use Oxygen\Data\Exception\NoResultException;
 use OxygenModule\Pages\Repository\FilterByParentPageClause;
 use OxygenModule\Pages\Repository\PageRepositoryInterface;
 use ReflectionException;
@@ -30,22 +26,29 @@ use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 use Webmozart\Assert\Assert;
 
-class PagesController extends VersionableCrudController {
+class PagesController extends Controller {
 
     private const PAGE_VIEW_KEY = 'appearance.pages::theme';
     private const CONTENT_VIEW_KEY = 'appearance.pages::contentView';
 
     const ALLOWED_SORT_FIELDS = ['title', 'slugPart', 'description', 'updatedAt'];
 
-    use Publishable;
-    use Previewable;
+    const LANG_MAPPINGS = [
+        'resource' => 'Page',
+        'pluralResource' => 'Pages'
+    ];
 
-    use BasicCrudApi, SoftDeleteCrudApi, VersionableCrudApi {
-        VersionableCrudApi::getListQueryParameters as versionableCrudQueryParameters;
-        SoftDeleteCrudApi::deleteDeleteApi insteadof BasicCrudApi;
+    use PublishableCrudTrait;
+    use PreviewableCrudTrait;
+
+    use BasicCrudTrait, SoftDeleteCrudTrait, VersionableCrudTrait {
+        VersionableCrudTrait::getListQueryParameters as versionableCrudQueryParameters;
+        SoftDeleteCrudTrait::deleteDeleteApi insteadof BasicCrudTrait;
     }
 
     const PER_PAGE = 25;
+
+    protected $repository;
 
     /**
      * @var PreferencesManager
@@ -57,20 +60,15 @@ class PagesController extends VersionableCrudController {
      */
     private $themeManager;
 
-    /**
-     * Constructs the PagesController.
-     *
-     * @param PageRepositoryInterface $repository
-     * @param BlueprintManager $manager
-     * @param PageFieldSet $fields
-     * @param PreferencesManager $preferencesManager
-     * @param ThemeManager $themeManager
-     * @throws BlueprintNotFoundException
-     */
-    public function __construct(PageRepositoryInterface $repository, BlueprintManager $manager, PageFieldSet $fields, PreferencesManager $preferencesManager, ThemeManager $themeManager) {
-        parent::__construct($repository, $manager->get('Page'), $fields);
+    public function __construct(PageRepositoryInterface $repository, PreferencesManager $preferencesManager, ThemeManager $themeManager) {
+        $this->repository = $repository;
         $this->preferences = $preferencesManager;
         $this->themeManager = $themeManager;
+        BasicCrudTrait::setupLangMappings(self::LANG_MAPPINGS);
+    }
+
+    protected function getItem($item) {
+        return is_object($item) ? $item : $this->repository->find((int) $item);
     }
 
     /**
@@ -108,7 +106,7 @@ class PagesController extends VersionableCrudController {
                 $response->header('Cache-Control', 'public, max-age=3600');
             }
             return $response;
-        } catch(NoResultException $e) {
+        } catch(\Oxygen\Data\Exception\NoResultException $e) {
             abort(404, "Slug not found");
         }
     }

@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Arr;
-use Oxygen\Preferences\Loader\PreferenceRepositoryInterface;
+use Oxygen\Core\Preferences\Loader\PreferenceRepositoryInterface;
 
 class AddContentViewPreference extends Migration {
 
