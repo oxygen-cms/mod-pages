@@ -48,17 +48,11 @@ class PagesController extends Controller {
 
     const PER_PAGE = 25;
 
-    protected $repository;
+    protected PageRepositoryInterface $repository;
 
-    /**
-     * @var PreferencesManager
-     */
-    private $preferences;
+    private PreferencesManager $preferences;
 
-    /**
-     * @var ThemeManager
-     */
-    private $themeManager;
+    private ThemeManager $themeManager;
 
     public function __construct(PageRepositoryInterface $repository, PreferencesManager $preferencesManager, ThemeManager $themeManager) {
         $this->repository = $repository;

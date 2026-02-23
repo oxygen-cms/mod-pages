@@ -31,12 +31,9 @@ class PartialsController extends Controller {
         'pluralResource' => 'Partials'
     ];
 
-    protected $repository;
+    protected PartialRepositoryInterface $repository;
 
-    /**
-     * @var PreferencesManager
-     */
-    private $preferences;
+    private PreferencesManager $preferences;
 
     public function __construct(PartialRepositoryInterface $repository, PreferencesManager $preferencesManager) {
         $this->repository = $repository;
