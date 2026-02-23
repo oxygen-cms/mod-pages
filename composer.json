@@ -1,56 +1,56 @@
 {
-    "name": "oxygen/mod-pages",
-    "description": "Pages Module for Oxygen",
-    "license": "MIT",
-    "keywords": [
-        "cms",
-        "framework",
-        "OxygenExtension"
-    ],
-    "authors": [
-        {
-            "name": "Chris Chamberlain",
-            "email": "chris@chamberlain.id.au"
-        }
-    ],
-    "require": {
-        "php": "^8.1",
-        "oxygen/auth": "~0.8.0",
-        "oxygen/core": "~1.0.0",
-        "oxygen/data": "~0.12.0",
-        "illuminate/support": "^10.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "OxygenModule\\Pages\\": "src/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "OxygenModule\\Pages\\PagesServiceProvider"
-            ]
-        }
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/oxygen-cms/laraguard-doctrine"
-        }
-    ],
-    "minimum-stability": "dev",
-    "require-dev": {
-        "phpstan/phpstan": "^1.8",
-        "phpspec/phpspec": "^7.0",
-        "phpstan/phpstan-doctrine": "1.4.x-dev",
-        "phpstan/extension-installer": "^1.3"
-    },
-    "scripts": {
-        "test": "vendor/bin/phpspec run && vendor/bin/phpstan analyze src --level 5 --memory-limit 256M"
-    },
-    "config": {
-        "allow-plugins": {
-            "phpstan/extension-installer": true
-        }
+  "name": "oxygen/mod-pages",
+  "description": "Pages Module for Oxygen",
+  "license": "MIT",
+  "keywords": [
+    "cms",
+    "framework",
+    "OxygenExtension"
+  ],
+  "authors": [
+    {
+      "name": "Chris Chamberlain",
+      "email": "chris@chamberlain.id.au"
     }
+  ],
+  "require": {
+    "php": "^8.1",
+    "oxygen/auth": "~1.0.0",
+    "oxygen/core": "~1.0.0",
+    "oxygen/data": "~0.12.0",
+    "illuminate/support": "^10.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "OxygenModule\\Pages\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "OxygenModule\\Pages\\PagesServiceProvider"
+      ]
+    }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/oxygen-cms/laraguard-doctrine"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require-dev": {
+    "phpstan/phpstan": "^1.8",
+    "phpspec/phpspec": "^8.0",
+    "phpstan/phpstan-doctrine": "1.4.x-dev",
+    "phpstan/extension-installer": "^1.3"
+  },
+  "scripts": {
+    "test": "vendor/bin/phpspec run && vendor/bin/phpstan analyze src --level 5 --memory-limit 256M"
+  },
+  "config": {
+    "allow-plugins": {
+      "phpstan/extension-installer": true
+    }
+  }
 }
