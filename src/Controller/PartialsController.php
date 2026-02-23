@@ -38,7 +38,7 @@ class PartialsController extends Controller {
     public function __construct(PartialRepositoryInterface $repository, PreferencesManager $preferencesManager) {
         $this->repository = $repository;
         $this->preferences = $preferencesManager;
-        BasicCrudTrait::setupLangMappings(self::LANG_MAPPINGS);
+        self::setupLangMappings(self::LANG_MAPPINGS);
     }
 
     protected function getItem($item) {

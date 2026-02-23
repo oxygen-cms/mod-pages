@@ -58,7 +58,7 @@ class PagesController extends Controller {
         $this->repository = $repository;
         $this->preferences = $preferencesManager;
         $this->themeManager = $themeManager;
-        BasicCrudTrait::setupLangMappings(self::LANG_MAPPINGS);
+        self::setupLangMappings(self::LANG_MAPPINGS);
     }
 
     protected function getItem($item) {

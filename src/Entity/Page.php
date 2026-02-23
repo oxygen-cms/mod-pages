@@ -103,7 +103,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
      * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Page",  inversedBy="versions")
      * @ORM\JoinColumn(name="head_version", referencedColumnName="id")
      */
-    private ?Page $headVersion = null;
+    protected ?Page $headVersion = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Page",  inversedBy="children")
