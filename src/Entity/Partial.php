@@ -25,11 +25,9 @@ use Oxygen\Data\Behaviour\Versions;
 use Oxygen\Data\Validation\Validatable;
 use Oxygen\Data\Behaviour\Searchable;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="partials")
- * @ORM\HasLifecycleCallbacks
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'partials')]
+#[ORM\HasLifecycleCallbacks]
 
 class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface, Templatable, Versionable, HasUpdatedAt, Publishable, Blameable {
 
@@ -38,41 +36,27 @@ class Partial implements PrimaryKeyInterface, Validatable, CacheInvalidatorInter
 
     const STAGE_PUBLISHED = 1;
 
-    /**
-     * @ORM\Column(name="`key`", type="string")
-     */
+    #[ORM\Column(name: '`key`', type: 'string')]
     protected $key;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     protected $title;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $author;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     protected $content;
 
-    /**
-     * @ORM\Column(type="json", nullable=true)
-     */
+    #[ORM\Column(type: 'json', nullable: true)]
     protected $richContent;
 
-    /**
-     * @ORM\OneToMany(targetEntity="OxygenModule\Pages\Entity\Partial", mappedBy="headVersion", cascade={"persist", "remove", "merge"})
-     * @ORM\OrderBy({ "updatedAt" = "DESC" })
-     */
+    #[ORM\OneToMany(targetEntity: 'OxygenModule\Pages\Entity\Partial', mappedBy: 'headVersion', cascade: ['persist', 'remove'])]
+    #[ORM\OrderBy(['updatedAt' => 'DESC'])]
     private $versions;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Partial",  inversedBy="versions", cascade={"persist"})
-     * @ORM\JoinColumn(name="head_version", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: 'OxygenModule\Pages\Entity\Partial', inversedBy: 'versions', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'head_version', referencedColumnName: 'id')]
     protected ?Partial $headVersion;
 
     /**

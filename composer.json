@@ -15,10 +15,10 @@
   ],
   "require": {
     "php": "^8.3",
-    "oxygen/auth": "~1.0.0",
-    "oxygen/core": "~1.1.0",
-    "oxygen/data": "~0.13.0",
-    "illuminate/support": "^10.0|^11.0"
+    "oxygen/auth": "~1.1.0",
+    "oxygen/core": "~1.2.0",
+    "oxygen/data": "~0.14.0",
+    "illuminate/support": "^12.0"
   },
   "autoload": {
     "psr-4": {
