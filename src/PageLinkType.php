@@ -38,7 +38,7 @@ class PageLinkType implements ObjectLinkType {
     {
         dump($DOMNode->tagName);
         $url = $DOMNode->getAttribute('href');
-        if($DOMNode->tagName == 'a' && $url !== null && Str::startsWith($url, '/')) {
+        if($DOMNode->tagName == 'a' && Str::startsWith($url, '/')) {
             if(!isset($this->pageLookupCache[$url]))
             {
                 try {

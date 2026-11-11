@@ -33,11 +33,9 @@ use Oxygen\Data\Behaviour\Searchable;
 use Oxygen\Data\Validation\ValidationService;
 use OxygenModule\Pages\ParentChildCycleException;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="pages")
- * @ORM\HasLifecycleCallbacks
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'pages')]
+#[ORM\HasLifecycleCallbacks]
 
 class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterface, Searchable, StatusIconInterface, Templatable, Versionable, HasUpdatedAt, Publishable, Blameable {
 
@@ -48,73 +46,48 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
     const STAGE_PUBLISHED = 2;
     const STAGE_ARCHIVED = 3;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     protected $slugPart;
 
-    /**
-     * @ORM\Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     protected $title;
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
+    #[ORM\Column(type: 'string', nullable: true)]
     protected $author;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     protected $description;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     protected $tags;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     protected $meta;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     protected $content;
 
-    /**
-     * @ORM\Column(type="json", nullable=true)
-     */
+    #[ORM\Column(type: 'json', nullable: true)]
     protected $richContent;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: 'text')]
     protected $options;
 
-    /**
-     * @ORM\OneToMany(targetEntity="OxygenModule\Pages\Entity\Page", mappedBy="headVersion", cascade={"persist", "remove", "merge"})
-     * @ORM\OrderBy({ "updatedAt" = "DESC" })
-     */
+    /** @var Collection<int, Page> */
+    #[ORM\OneToMany(targetEntity: 'OxygenModule\Pages\Entity\Page', mappedBy: 'headVersion', cascade: ['persist', 'remove'])]
+    #[ORM\OrderBy(['updatedAt' => 'DESC'])]
     private Collection $versions;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Page",  inversedBy="versions")
-     * @ORM\JoinColumn(name="head_version", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: 'OxygenModule\Pages\Entity\Page', inversedBy: 'versions')]
+    #[ORM\JoinColumn(name: 'head_version', referencedColumnName: 'id')]
     protected ?Page $headVersion = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="OxygenModule\Pages\Entity\Page",  inversedBy="children")
-     * @ORM\JoinColumn(name="parent", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: 'OxygenModule\Pages\Entity\Page', inversedBy: 'children')]
+    #[ORM\JoinColumn(name: 'parent', referencedColumnName: 'id')]
     protected ?Page $parent = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity="OxygenModule\Pages\Entity\Page", mappedBy="parent", cascade={"persist"})
-     * @ORM\OrderBy({ "slugPart" = "ASC" })
-     */
+    #[ORM\OneToMany(targetEntity: 'OxygenModule\Pages\Entity\Page', mappedBy: 'parent', cascade: ['persist'])]
+    #[ORM\OrderBy(['slugPart' => 'ASC'])]
     private $children;
 
     /**
