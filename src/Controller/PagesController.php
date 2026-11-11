@@ -24,7 +24,6 @@ use ReflectionException;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
-use Webmozart\Assert\Assert;
 
 class PagesController extends Controller {
 
@@ -91,11 +90,10 @@ class PagesController extends Controller {
      */
     public function getView(TwigTemplateCompiler $templating, $slug = '/') {
         try {
-            Assert::isInstanceOf($this->repository, PageRepositoryInterface::class);
             $page = $this->repository->findBySlug($slug);
             $view = $this->getContent($templating, null, true, $page);
             $response = response($view);
-            if(auth()->guest()) {
+            if(auth()->guard()->guest()) {
                 // TODO: make this configurable by a preference item...
                 $response->header('Cache-Control', 'public, max-age=3600');
             }

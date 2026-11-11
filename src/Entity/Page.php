@@ -73,6 +73,7 @@ class Page implements PrimaryKeyInterface, Validatable, CacheInvalidatorInterfac
     #[ORM\Column(type: 'text')]
     protected $options;
 
+    /** @var Collection<int, Page> */
     #[ORM\OneToMany(targetEntity: 'OxygenModule\Pages\Entity\Page', mappedBy: 'headVersion', cascade: ['persist', 'remove'])]
     #[ORM\OrderBy(['updatedAt' => 'DESC'])]
     private Collection $versions;
