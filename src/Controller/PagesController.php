@@ -152,12 +152,29 @@ class PagesController extends Controller {
     }
 
     /**
+     * Returns details about the theme used by the content editor (currently its content stylesheet).
+     *
+     * Only called by logged in users: the route is registered under the `api_auth` middleware group,
+     * so unauthenticated requests are rejected before reaching this method. The optional `customTheme`
+     * query parameter is therefore never read from a public request.
+     *
+     * `customTheme` is only honoured if it names a registered theme; anything else (e.g. a half-typed
+     * value in the page options editor) is ignored and the current theme's details are returned.
+     *
      * @throws PreferenceNotFoundException
      */
-    public function getThemeDetails(PreferencesManager $prefs): JsonResponse {
-        return response()->json([
-            'contentStylesheet' => $prefs->get('appearance.pages::contentStylesheet')
-        ]);
+    public function getThemeDetails(Request $request, PreferencesManager $prefs): JsonResponse {
+        $customTheme = $request->query('customTheme');
+        if(is_string($customTheme) && array_key_exists($customTheme, $this->themeManager->all())) {
+            $this->themeManager->temporarilyOverrideTheme($customTheme);
+        }
+        try {
+            return response()->json([
+                'contentStylesheet' => $prefs->get('appearance.pages::contentStylesheet')
+            ]);
+        } finally {
+            $this->themeManager->temporarilyOverrideTheme(null);
+        }
     }
 
 }
