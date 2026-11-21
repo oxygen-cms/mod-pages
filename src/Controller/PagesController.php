@@ -154,10 +154,18 @@ class PagesController extends Controller {
     /**
      * @throws PreferenceNotFoundException
      */
-    public function getThemeDetails(PreferencesManager $prefs): JsonResponse {
-        return response()->json([
-            'contentStylesheet' => $prefs->get('appearance.pages::contentStylesheet')
-        ]);
+    public function getThemeDetails(Request $request, PreferencesManager $prefs): JsonResponse {
+        $customTheme = $request->query('customTheme');
+        if(is_string($customTheme) && $customTheme !== '') {
+            $this->themeManager->temporarilyOverrideTheme($customTheme);
+        }
+        try {
+            return response()->json([
+                'contentStylesheet' => $prefs->get('appearance.pages::contentStylesheet')
+            ]);
+        } finally {
+            $this->themeManager->temporarilyOverrideTheme(null);
+        }
     }
 
 }
